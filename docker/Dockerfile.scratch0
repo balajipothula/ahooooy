@@ -1,0 +1,28 @@
+FROM scratch AS scratch0
+
+LABEL \
+  # Authors or maintainers of the image.
+  org.opencontainers.image.authors="Balaji Pothula <balan.pothula@gmail.com>" \
+  # Image reference of the image.
+  org.opencontainers.image.base.name="scratch" \
+  # Title or name for the image.
+  org.opencontainers.image.title="scratch0" \
+  # Version of the packaged software.
+  org.opencontainers.image.version="0" \
+  # Description or summary of the image.
+  org.opencontainers.image.description="GO 1.21.0 - Programming language" \
+  # Name of the distributing entity, organization or individual.
+  org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. <https://blitzsystems.in>"
+
+# Set working directory
+WORKDIR /gofiber
+
+# Mount point for WebApp go lang file.
+VOLUME ["/gofiber"]
+
+# Expose port 3000 for incoming HTTP traffic.
+# Container will listen on port 3000 using TCP.
+EXPOSE 3000/tcp
+
+# Set the entrypoint to start main with go fiber v2.
+ENTRYPOINT ["/gofiber/main"]

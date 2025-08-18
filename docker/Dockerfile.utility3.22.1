@@ -1,0 +1,27 @@
+FROM alpine:3.22.1 AS utility3.22.1
+
+LABEL \
+  # Authors or maintainers of the image.
+  org.opencontainers.image.authors="Balaji Pothula <balan.pothula@gmail.com>" \
+  # Image reference of the image.
+  org.opencontainers.image.base.name="alpine:3.22.1" \
+  # Title or name for the image.
+  org.opencontainers.image.title="utility:3.22.1" \
+  # Version of the packaged software.
+  org.opencontainers.image.version="3.22.1" \
+  # Description or summary of the image.
+  org.opencontainers.image.description="Fly Utility Machine - Transfers build artifacts to Fly Volume" \
+  # Name of the distributing entity, organization or individual.
+  org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. <https://blitzsystems.in>"
+
+# Create mount point for Fly volume.
+RUN mkdir /gofiber
+
+# Set working directory
+WORKDIR /gofiber
+
+# Mount point for WebApp GO lang Binary.
+VOLUME ["/gofiber"]
+
+# Set the entrypoint to keep container alive.
+CMD ["sleep", "infinity"]
