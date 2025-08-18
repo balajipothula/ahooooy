@@ -142,7 +142,7 @@ jobs:
           MAIN: ${{ steps.append-utc-now.outputs.main }}
         run: |
           HOSTNAME=$(flyctl status --app="$APP" --json | jq -r '.Hostname')
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://$HOSTNAME)
+          curl -s -o /dev/null -w "%{http_code}" "https://$HOSTNAME" || true
           sleep 5
           flyctl ssh sftp shell --app="$APP" <<< "put /tmp/$MAIN /gofiber/$MAIN"
       - name: Step - Make Go Artifact Executable

@@ -1,4 +1,4 @@
-FROM alpine:3.22.1 AS utility3.22.1
+FROM alpine:3.22.1 AS httpd3.22.1
 
 LABEL \
   # Authors or maintainers of the image.
@@ -14,14 +14,20 @@ LABEL \
   # Name of the distributing entity, organization or individual.
   org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. <https://blitzsystems.in>"
 
-# Create mount point for Fly volume.
+# Install HTTP server
+RUN apk add --no-cache busybox-extras
+
+# Create volume mount point
 RUN mkdir /gofiber
 
 # Set working directory
 WORKDIR /gofiber
 
-# Mount point for WebApp GO lang Binary.
+# Declare volume
 VOLUME ["/gofiber"]
 
-# Set the entrypoint to keep container alive.
-CMD ["sleep", "infinity"]
+# Expose HTTP port
+EXPOSE 80
+
+# Start HTTP server
+ENTRYPOINT ["busybox", "httpd", "-f", "-p", "80"]
