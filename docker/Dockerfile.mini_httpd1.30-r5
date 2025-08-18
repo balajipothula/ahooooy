@@ -1,4 +1,4 @@
-FROM alpine:3.22.1 AS httpd3.22.1
+FROM alpine:3.22.1 AS mini_httpd1.30-r5
 
 LABEL \
   # Authors or maintainers of the image.
@@ -6,16 +6,16 @@ LABEL \
   # Image reference of the image.
   org.opencontainers.image.base.name="alpine:3.22.1" \
   # Title or name for the image.
-  org.opencontainers.image.title="utility:3.22.1" \
+  org.opencontainers.image.title="mini_httpd:1.30-r5" \
   # Version of the packaged software.
-  org.opencontainers.image.version="3.22.1" \
+  org.opencontainers.image.version="1.30-r5" \
   # Description or summary of the image.
-  org.opencontainers.image.description="Fly Utility Machine - Transfers build artifacts to Fly Volume" \
+  org.opencontainers.image.description="mini_httpd - Small forking webserver with ssl and ipv6 support" \
   # Name of the distributing entity, organization or individual.
   org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. <https://blitzsystems.in>"
 
-# Install HTTP server
-RUN apk add --no-cache busybox-extras
+# Install mini_httpd server
+RUN apk add --no-cache mini_httpd
 
 # Create volume mount point
 RUN mkdir /gofiber
@@ -29,5 +29,5 @@ VOLUME ["/gofiber"]
 # Expose HTTP port
 EXPOSE 80
 
-# Start HTTP server
-ENTRYPOINT ["busybox", "httpd", "-f", "-p", "80"]
+# Start mini_httpd server on port 80
+ENTRYPOINT ["mini_httpd", "-D", "-p", "80"]
