@@ -4,27 +4,21 @@ description: 'Continuous delivery action to provision Fly.io infrastructure and 
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        type: choice
-        default: 'dev'
-        description: 'Select deployment environment'
-        options: ['dev', 'qa', 'prod']
-        required: true
       fly-app-create: 
         type: boolean
         default: false
         description: 'Create Fly.io App'
-        required: true
-      go_filename:
-        type: string
-        default: 'main.go'
-        description: 'Enter Go filename:'
-        required: true
+        required: false
+      build_push_go_artifact: 
+        type: boolean
+        default: false
+        description: 'Build and Push Go Artifact'
+        required: false
       fly-app-update: 
         type: boolean
         default: false
         description: 'Deploy Fly.io App'
-        required: true
+        required: false
 
 permissions:
   contents: write
@@ -81,8 +75,9 @@ jobs:
           if ! flyctl ips list --app="$APP" --json | jq -e 'any(.[]; .Address != null and .Address != "")' >/dev/null; then
             flyctl ips allocate-v4 --app="$APP" --region="$REGION" --shared --yes
           fi
-  job_build_and_push_go_artifact:
+  job_build_push_go_artifact:
     name: 🐹 Build & Push Go Artifact
+    if: ${{ inputs.build_push_go_artifact }}
     needs: [job_fly-app-create]
     runs-on: ubuntu-22.04
     outputs:
@@ -114,7 +109,7 @@ jobs:
         working-directory: go
         env:
           MAIN: ${{ steps.append-utc-now.outputs.main }}
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /tmp/$MAIN ${{ inputs.go_filename }}
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /tmp/$MAIN ./go/main.go
       - name: Step - Install Ultimate Packer for eXecutables
         run: sudo apt --yes update && sudo apt --yes install upx
       - name: Compress Go Artifact with UPX
@@ -152,7 +147,7 @@ jobs:
   job_fly-app-update:
     name: 🪂 Fly App Update
     if: ${{ inputs.fly-app-update }}
-    needs: [job_build_and_push_go_artifact]
+    needs: [job_build_push_go_artifact]
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -164,7 +159,6 @@ jobs:
           repository: '${{ github.repository }}'
           token: '${{ github.token }}'
       - name: Step - flyctl Setup ᵛ⁰·³·¹⁶⁷
-        
         uses: superfly/flyctl-actions/setup-flyctl@master
         with:
           version: ${{ env.FLY_VERSION }}
@@ -175,5 +169,5 @@ jobs:
       - name: Step - Fly.io App Update
         env:
           IMAGE: docker.io/balajipothula/go:1.21
-          MAIN: ${{ needs.job_build_and_push_go_artifact.outputs.main }}
+          MAIN: ${{ needs.job_build_push_go_artifact.outputs.main }}
         run: flyctl machine update $VM_ID --app="$APP" --autostart --autostop='stop' --config='./fly.io/go-fiber-app.toml' --detach --entrypoint="/gofiber/$MAIN" --image="$IMAGE" --port='443:3000/tcp:http:tls' --yes
