@@ -65,7 +65,7 @@ jobs:
           echo "VOLUME_ID=$VOLUME_ID" >> $GITHUB_ENV
       - name: Step - Launch Fly.io Machine
         env:
-          IMAGE: docker.io/balajipothula/utility:3.22.1
+          IMAGE: docker.io/balajipothula/mini_httpd:1.30-r5
         run: |
           if ! flyctl machines list --app="$APP" --json | jq -e --arg name "$VM_NAME" 'any(.[]; .name == $name)' >/dev/null; then
             flyctl machine run $IMAGE --app="$APP" --name="$VM_NAME" --org="$ORG" --port='443:80/tcp:http:tls' --region="$REGION" --use-zstd --vm-size='shared-cpu-1x' --volume="$VOLUME_ID:/gofiber:rw" --wg=true
