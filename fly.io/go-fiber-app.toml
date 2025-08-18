@@ -1,0 +1,31 @@
+app             = "go-fiber-app"
+primary_region  = "fra"
+kill_signal     = "SIGINT"
+kill_timeout    = 5
+swap_size_mb    = 256
+
+[[mounts]]
+  volume = "go_fiber_vol"
+  path   = "/gofiber"
+
+[[vm]]
+  size = "shared-cpu-1x"
+
+[[services]]
+  internal_port = 3000
+
+  [[services.ports]]
+    port     = 443
+    handlers = ["tls", "http"]
+    protocol = "tcp"
+
+  [[services.ports]]
+    port     = 80
+    handlers = ["http"]
+    protocol = "tcp"
+
+[env]
+  APP = "go-fiber-app"
+
+[[restart]]
+  policy = "always"

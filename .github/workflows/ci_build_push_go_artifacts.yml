@@ -1,0 +1,58 @@
+name: '🤖 CI • Build • Push • GO Artifacts'
+description: 'Continuous integration action to build and push GO web application binary artifacts.'  
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        default: 'dev'
+        description: 'Select deployment environment'
+        options: ['dev', 'qa', 'prod']
+        required: true
+      go_filename:
+        type: string
+        default: 'main.go'
+        description: 'Enter Go filename'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  job_actions_setup-go_v5:
+    name: 🐹 Setup Go Environment ᵛ⁵
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Step - Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository }}'
+          token: '${{ github.token }}'
+      - name: Step - Setup Go Environment ᵛ⁵
+        uses: ./.github/actions/setup-go_v5
+        with:
+          go-version: '1.21.0'
+          token: '${{ github.token }}'
+          cache-dependency-path: go/go.sum
+      - name: Step - Init Go Modules
+        working-directory: go
+        run: |
+          if [ ! -f "go.mod" ]; then
+            go mod init github.com/${{ github.repository }}/go
+          fi
+          go get github.com/gofiber/fiber/v2
+          go mod tidy
+      - name: Step - Build Go Artifact 🧱
+        working-directory: go
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/main main.go
+      - name: Step - Upload Go Artifact ᵛ⁴
+        uses: ./.github/actions/upload-artifact_v4
+        with:
+          name: 'main'
+          path: '/tmp/main'
+          if-no-files-found: 'error'
+          retention-days: 1
+          compression-level: 0
+          overwrite: true
+          include-hidden-files: false

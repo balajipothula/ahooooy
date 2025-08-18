@@ -1,0 +1,45 @@
+name: '🐳 Docker Setup QEMU ᵛ³'
+description: 'Install QEMU static binaries'
+
+on:
+  workflow_call:
+    inputs:
+      cache-image:
+        type: boolean
+        default: true
+        description: 'Cache binfmt image to GitHub Actions cache backend'
+        required: false
+      image:
+        type: string
+        default: 'docker.io/tonistiigi/binfmt:latest'
+        description: 'QEMU static binaries Docker image (e.g. tonistiigi/binfmt:latest)'
+        required: false
+      platforms:
+        type: string
+        default: 'all'
+        description: 'Platforms to install (e.g. arm64,riscv64,arm)'
+        required: false
+    outputs:
+      platforms:
+        value: ${{ jobs.job-setup-qemu-action.outputs.platforms }}
+        description: 'Available platforms (comma separated)'
+
+jobs:
+  job-setup-qemu-action:
+    name: 🧩 Docker Setup QEMU ᵛ³
+    runs-on: ubuntu-22.04
+    environment: ${{ github.ref }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    steps:
+      - name: Step - Docker Setup QEMU ᵛ³
+        id: step-setup-qemu-action
+        uses: docker/setup-qemu-action@v3
+        with:
+          cache-image: ${{ inputs.cache-image }}
+          image: ${{ inputs.image }}
+          platforms: ${{ inputs.platforms }}
+    outputs:
+      platforms: ${{ steps.step-setup-qemu-action.outputs.platforms }}

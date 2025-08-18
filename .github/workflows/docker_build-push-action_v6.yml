@@ -1,0 +1,270 @@
+name: '🐳 Docker Build & Push ᵛ⁶'
+description: 'Build and push Docker images with Buildx'
+
+on:
+  workflow_call:
+    secrets:
+      DOCKERHUB_TOKEN:
+        description: 'Password or PAT (Personal Access Token) used to log against the Docker registry'
+        required: true    
+      GHCR_PAT:
+        description: 'Password or PAT (Personal Access Token) used to log against the GitHub Container Registry'
+        required: true    
+    inputs:
+      registry:
+        type: string
+        default: null
+        description: "Image Registry"
+        required: false
+      add-hosts:
+        type: string
+        default: null
+        description: 'List of custom host-to-IP mappings (e.g., docker:10.180.0.1)'
+        required: false
+      allow:
+        type: string
+        default: null
+        description: 'Extra privileged entitlements (e.g., network.host,security.insecure)'
+        required: false
+      annotations:
+        type: string
+        default: null
+        description: 'List of annotations to set on the image'
+        required: false
+      attests:
+        type: string
+        default: null
+        description: 'Attestation parameters (e.g., type=sbom,generator=image)'
+        required: false
+      build-args:
+        type: string
+        default: null
+        description: 'List of build-time variables'
+        required: false
+      build-contexts:
+        type: string
+        default: null
+        description: 'List of additional build contexts (e.g., name=path)'
+        required: false
+      builder:
+        type: string
+        default: null
+        description: 'Builder instance'
+        required: false
+      cache-from:
+        type: string
+        default: null
+        description: 'List of external cache sources for buildx (e.g., user/app:cache, type=local,src=path/to/dir)'
+        required: false
+      cache-to:
+        type: string
+        default: null
+        description: 'List of cache export destinations for buildx (e.g., user/app:cache, type=local,dest=path/to/dir)'
+        required: false
+      call:
+        type: string
+        default: null
+        description: 'Set method for evaluating build (e.g., check)'
+        required: false
+      cgroup-parent:
+        type: string
+        default: null
+        description: 'Optional parent cgroup for the container used in the build'
+        required: false
+      context:
+        type: string
+        default: null
+        description: 'Build`s context is the set of files located in the specified PATH or URL'
+        required: false
+      file:
+        type: string
+        default: null
+        description: 'Path to the Dockerfile'
+        required: false
+      labels:
+        type: string
+        default: null
+        description: 'List of metadata for an image'
+        required: false
+      load:
+        type: boolean
+        default: false
+        description: 'Load is a shorthand for --output=type=docker'
+        required: false
+      network:
+        type: string
+        default: null
+        description: 'Set the networking mode for the RUN instructions during build'
+        required: false
+      no-cache:
+        type: boolean
+        default: false
+        description: 'Do not use cache when building the image'
+        required: false
+      no-cache-filters:
+        type: string
+        default: null
+        description: 'Do not cache specified stages'
+        required: false
+      outputs:
+        type: string
+        default: null
+        description: 'List of output destinations (format: type=local,dest=path)'
+        required: false
+      platforms:
+        type: string
+        default: null
+        description: 'List of target platforms for build'
+        required: false
+      provenance:
+        type: string
+        default: null
+        description: 'Generate provenance attestation for the build (shorthand for --attest=type=provenance)'
+        required: false
+      pull:
+        type: boolean
+        default: false
+        description: 'Always attempt to pull all referenced images'
+        required: false
+      push:
+        type: boolean
+        default: false
+        description: 'Push is a shorthand for --output=type=registry'
+        required: false
+      sbom:
+        type: string
+        default: null
+        description: 'Generate SBOM attestation for the build (shorthand for --attest=type=sbom)'
+        required: false
+      secrets:
+        type: string
+        default: null
+        description: 'List of secrets to expose to the build (e.g., key=string, GIT_AUTH_TOKEN=mytoken)'
+        required: false
+      secret-envs:
+        type: string
+        default: null
+        description: 'List of secret env vars to expose to the build (e.g., key=envname, MY_SECRET=MY_ENV_VAR)'
+        required: false
+      secret-files:
+        type: string
+        default: null
+        description: 'List of secret files to expose to the build (e.g., key=filename, MY_SECRET=./secret.txt)'
+        required: false
+      shm-size:
+        type: string
+        default: null
+        description: 'Size of /dev/shm (e.g., 2g)'
+        required: false
+      ssh:
+        type: string
+        default: null
+        description: 'List of SSH agent socket or keys to expose to the build'
+        required: false
+      tags:
+        type: string
+        default: null
+        description: 'List of tags'
+        required: false
+      target:
+        type: string
+        default: null
+        description: 'Sets the target stage to build'
+        required: false
+      ulimit:
+        type: string
+        default: null
+        description: 'Ulimit options (e.g., nofile=1024:1024)'
+        required: false
+      github-token:
+        type: string
+        default: '${{ github.token }}'
+        description: 'GitHub Token used to authenticate against a repository for Git context'
+        required: false
+    outputs:
+      imageid:
+        value: ${{ jobs.job_docker_build-push-action_v6.outputs.imageid }}
+        description: 'Image ID'
+      digest:
+        value: ${{ jobs.job_docker_build-push-action_v6.outputs.digest }}
+        description: 'Image digest'
+      metadata:
+        value: ${{ jobs.job_docker_build-push-action_v6.outputs.metadata }}
+        description: 'Build result metadata'
+jobs:
+  job_docker_build-push-action_v6:
+    name: 🧩 Docker Build & Push ᵛ⁶
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    env:
+      DOCKER_BUILD_CHECKS_ANNOTATIONS: true
+      DOCKER_BUILD_SUMMARY: false
+      DOCKER_BUILD_RECORD_UPLOAD: true
+      DOCKER_BUILD_RECORD_RETENTION_DAYS: 0
+      DOCKER_BUILD_EXPORT_LEGACY: false
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    steps:
+      - name: Step - Checkout ᵛ³
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository }}'
+          token: '${{ github.token }}'
+      - name: Step - Docker Login ᵛ³
+        if: ${{ inputs.registry == 'Docker Hub' }}
+        uses: ./.github/actions/docker_login-action_v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Step - GHCR Login ᵛ³
+        if: ${{ inputs.registry == 'GitHub Container Registry' }}
+        uses: ./.github/actions/ghcr_login-action_v3
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+      - name: Step - Docker Build & Push ᵛ⁶
+        id: step_docker_build-push-action_v6
+        uses: docker/build-push-action@v6
+        with:
+          add-hosts: ${{ inputs.add-hosts }}
+          allow: ${{ inputs.allow }}
+          annotations: ${{ inputs.annotations }}
+          attests: ${{ inputs.attests }}
+          build-args: ${{ inputs.build-args }}
+          build-contexts: ${{ inputs.build-contexts }}
+          builder: ${{ inputs.builder }}
+          cache-from: ${{ inputs.cache-from }}
+          cache-to: ${{ inputs.cache-to }}
+          call: ${{ inputs.call }}
+          cgroup-parent: ${{ inputs.cgroup-parent }}
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
+          labels: ${{ inputs.labels }}
+          load: ${{ inputs.load }}
+          network: ${{ inputs.network }}
+          no-cache: ${{ inputs.no-cache }}
+          no-cache-filters: ${{ inputs.no-cache-filters }}
+          outputs: ${{ inputs.outputs }}
+          platforms: ${{ inputs.platforms }}
+          provenance: ${{ inputs.provenance }}
+          pull: ${{ inputs.pull }}
+          push: ${{ inputs.push }}
+          sbom: ${{ inputs.sbom }}
+          secrets: ${{ inputs.secrets }}
+          secret-envs: ${{ inputs.secret-envs }}
+          secret-files: ${{ inputs.secret-files }}
+          shm-size: ${{ inputs.shm-size }}
+          ssh: ${{ inputs.ssh }}
+          tags: ${{ inputs.tags }}
+          target: ${{ inputs.target }}
+          ulimit: ${{ inputs.ulimit }}
+          github-token: ${{ inputs.github-token }}
+    outputs:
+      imageid: ${{ steps.step_docker_build-push-action_v6.outputs.imageid }}
+      digest: ${{ steps.step_docker_build-push-action_v6.outputs.digest }}
+      metadata: ${{ steps.step_docker_build-push-action_v6.outputs.metadata }}

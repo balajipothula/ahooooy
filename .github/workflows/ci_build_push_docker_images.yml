@@ -1,0 +1,69 @@
+name: '🤖 CI • Build • Push • Docker Images'
+description: 'Continuous integration action to build and push Docker images to selected registries.'  
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        default: 'dev'
+        description: 'Select deployment environment'
+        options: ['dev', 'qa', 'prod']
+        required: true
+      dockerfile:
+        type: string
+        default: 'Dockerfile'
+        description: 'Enter Dockerfile name'
+        required: true
+      registry:
+        type: choice
+        default: 'Docker Hub'
+        description: 'Select registry to push image'
+        options: ['Docker Hub', 'GitHub Container Registry']
+        required: true
+      namespace_repository_tag:
+        type: string
+        default: 'balajipothula/nginx:1.28.0'
+        description: 'Enter "Namespace/Repository:Tag"'
+        required: true
+      docker_build-push-action_v6:
+        type: boolean
+        default: false
+        description: '🐳 Docker Build & Push ᵛ⁶'
+        required: true
+
+jobs:
+  job_get_utc-time-now:
+    name: 🕒 Get UTC Time Now
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Step - Get UTC Time Now
+        id: step_get_utc-time-now
+        run: echo "utc-time-now=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+    outputs:
+      utc-time-now: ${{ steps.step_get_utc-time-now.outputs.utc-time-now }}
+  job_docker_setup-qemu-action_v3:
+    name: 🖱️ Docker Setup QEMU ᵛ³
+    uses: ./.github/workflows/docker_setup-qemu-action_v3.yml
+  job_docker_setup-buildx-action_v3:
+    name: 🖱️ Docker Setup Buildx ᵛ³
+    needs: [job_docker_setup-qemu-action_v3]
+    uses: ./.github/workflows/docker_setup-buildx-action_v3.yml
+  job_docker_build-push-action_v6:
+    name: 🖱️ Docker Build & Push ᵛ⁶
+    needs: [job_get_utc-time-now, job_docker_setup-qemu-action_v3, job_docker_setup-buildx-action_v3]
+    uses: ./.github/workflows/docker_build-push-action_v6.yml
+    with:
+      registry: ${{ inputs.registry }}
+      file: './docker/${{ inputs.dockerfile }}'
+      labels: |
+        org.opencontainers.image.created='${{ needs.job_get_utc-time-now.outputs.utc-time-now }}'
+        org.opencontainers.image.source='github.com/${{ github.repository }}'
+      load: false
+      platforms: linux/amd64
+      push: true
+      tags: |
+        ${{ (inputs.registry == 'Docker Hub' && format('{0}', inputs.namespace_repository_tag)) || (inputs.registry == 'GitHub Container Registry' && format('ghcr.io/{0}', inputs.namespace_repository_tag)) }}
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      GHCR_PAT: ${{ secrets.GHCR_PAT }}

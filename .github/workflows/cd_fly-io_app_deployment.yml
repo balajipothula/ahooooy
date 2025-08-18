@@ -1,0 +1,179 @@
+name: '🚀 CD • Fly.io • App Deployment'
+description: 'Continuous delivery action to provision Fly.io infrastructure and app deployment using flyctl'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        default: 'dev'
+        description: 'Select deployment environment'
+        options: ['dev', 'qa', 'prod']
+        required: true
+      fly-app-create: 
+        type: boolean
+        default: false
+        description: 'Create Fly.io App'
+        required: true
+      go_filename:
+        type: string
+        default: 'main.go'
+        description: 'Enter Go filename:'
+        required: true
+      fly-app-update: 
+        type: boolean
+        default: false
+        description: 'Deploy Fly.io App'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  FLY_VERSION: 0.3.167
+  APP: go-fiber-app
+  ORG: personal
+  REGION: fra
+
+jobs:
+  job_fly-app-create:
+    name: 🪂 Fly App Creation
+    if: ${{ inputs.fly-app-create }}
+    runs-on: ubuntu-22.04
+    env:
+      VM_NAME: 'go-fiber-vm'
+      VOLUME: 'go_fiber_vol'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Step - Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository }}'
+          token: '${{ github.token }}'
+      - name: Step - flyctl Setup ᵛ⁰·³·¹⁶⁷
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        with:
+          version: ${{ env.FLY_VERSION }}
+      - name: Step - Create Fly.io App
+        run: |
+          if ! flyctl apps list --org="$ORG" --json | jq -e --arg app "$APP" 'any(.[]; .Name == $app or .name == $app)' >/dev/null; then
+            flyctl apps create --name="$APP" --org="$ORG" --yes
+          fi
+      - name: Step - Create Fly.io Volume
+        run: |
+          if ! flyctl volumes list --app="$APP" --json | jq -e 'any(.[]; .id != null and .id != "")' >/dev/null; then
+            VOLUME_ID=$(flyctl volumes create $VOLUME --app="$APP" --count=1 --no-encryption --region="$REGION" --require-unique-zone=true --size=1 --snapshot-retention=1 --vm-size='shared-cpu-1x' --yes --json | jq -r '.id')
+          fi
+          VOLUME_ID=${VOLUME_ID:-$(flyctl volumes list --app="$APP" --json | jq -r '.[0].id')}
+          echo "VOLUME_ID=$VOLUME_ID" >> $GITHUB_ENV
+      - name: Step - Launch Fly.io Machine
+        env:
+          IMAGE: docker.io/balajipothula/utility:3.22.1
+        run: |
+          if ! flyctl machines list --app="$APP" --json | jq -e --arg name "$VM_NAME" 'any(.[]; .name == $name)' >/dev/null; then
+            flyctl machine run $IMAGE --app="$APP" --name="$VM_NAME" --org="$ORG" --region="$REGION" --use-zstd --vm-size='shared-cpu-1x' --volume="$VOLUME_ID:/gofiber:rw" --wg=true
+          fi
+      - name: Step - Allocate IPv4 to Fly.io Machine
+        run: |
+          if ! flyctl ips list --app="$APP" --json | jq -e 'any(.[]; .Address != null and .Address != "")' >/dev/null; then
+            flyctl ips allocate-v4 --app="$APP" --region="$REGION" --shared --yes
+          fi
+  job_build_and_push_go_artifact:
+    name: 🐹 Build & Push Go Artifact
+    needs: [job_fly-app-create]
+    runs-on: ubuntu-22.04
+    outputs:
+      main: ${{ steps.append-utc-now.outputs.main }}
+    steps:
+      - name: Step - Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository }}'
+          token: '${{ github.token }}'
+      - name: Step - Setup Go Environment ᵛ⁵
+        uses: ./.github/actions/setup-go_v5
+        with:
+          go-version: '1.21.0'
+          token: '${{ github.token }}'
+          cache-dependency-path: go/go.sum
+      - name: Step - Init Go Modules
+        working-directory: go
+        run: |
+          if [ ! -f "go.mod" ]; then
+            go mod init github.com/${{ github.repository }}/go
+          fi
+          go get github.com/gofiber/fiber/v2
+          go mod tidy
+      - name: Append UTC Now to Artifact 🕘
+        id: append-utc-now
+        run: echo "main=main-$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+      - name: Step - Build Go Artifact 🧱
+        working-directory: go
+        env:
+          MAIN: ${{ steps.append-utc-now.outputs.main }}
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /tmp/$MAIN ${{ inputs.go_filename }}
+      - name: Step - Install Ultimate Packer for eXecutables
+        run: sudo apt --yes update && sudo apt --yes install upx
+      - name: Compress Go Artifact with UPX
+        env:
+          MAIN: ${{ steps.append-utc-now.outputs.main }} 
+        run: upx --best --lzma /tmp/$MAIN
+      - name: Step - Upload Go Artifact ᵛ⁴
+        uses: ./.github/actions/upload-artifact_v4
+        env:
+          MAIN: ${{ steps.append-utc-now.outputs.main }}
+        with:
+          name: ${{ env.MAIN }}
+          path: /tmp/${{ env.MAIN }}
+          if-no-files-found: 'error'
+          retention-days: 1
+          compression-level: 0
+          overwrite: true
+          include-hidden-files: false
+      - name: Step - flyctl Setup ᵛ⁰·³·¹⁶⁷
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        with:
+          version: ${{ env.FLY_VERSION }}
+      - name: Step - Push Go Artifact into Fly.io Volume
+        env:
+          MAIN: ${{ steps.append-utc-now.outputs.main }}
+        run: |
+          HOSTNAME=$(flyctl status --app="$APP" --json | jq -r '.Hostname')
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://$HOSTNAME)
+          sleep 5
+          flyctl ssh sftp shell --app="$APP" <<< "put /tmp/$MAIN /gofiber/$MAIN"
+      - name: Step - Make Go Artifact Executable
+        env:
+          MAIN: ${{ steps.append-utc-now.outputs.main }}
+        run: flyctl ssh console --app="$APP" --command "chmod +x /gofiber/$MAIN"
+  job_fly-app-update:
+    name: 🪂 Fly App Update
+    if: ${{ inputs.fly-app-update }}
+    needs: [job_build_and_push_go_artifact]
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Step - Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: '${{ github.repository }}'
+          token: '${{ github.token }}'
+      - name: Step - flyctl Setup ᵛ⁰·³·¹⁶⁷
+        
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        with:
+          version: ${{ env.FLY_VERSION }}
+      - name: Step - Fly.io App Config Validate
+        run: flyctl config validate --app="$APP" --config='./fly.io/go-fiber-app.toml' --strict --debug --verbose
+      - name: Step - Get Fly.io Machine ID
+        run: echo "VM_ID=$(flyctl machine list --app="$APP" --quiet)" >> $GITHUB_ENV
+      - name: Step - Fly.io App Update
+        env:
+          IMAGE: docker.io/balajipothula/go:1.21
+          MAIN: ${{ needs.job_build_and_push_go_artifact.outputs.main }}
+        run: flyctl machine update $VM_ID --app="$APP" --autostart --autostop='stop' --config='./fly.io/go-fiber-app.toml' --detach --entrypoint="/gofiber/$MAIN" --image="$IMAGE" --port='443:3000/tcp:http:tls' --yes

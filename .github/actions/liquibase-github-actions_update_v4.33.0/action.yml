@@ -1,0 +1,770 @@
+name: "🛢 Liquibase Update Action ᵛ⁴·³³·⁰"
+description: "Deploy any changes in the changelog file that have not been deployed."
+
+inputs:
+  addEmptyMdcValues:
+    type: boolean
+    default: false
+    description: "If true, a subset of the MdcKeys, as defined by product, will be set to empty strings upon system startup."
+    required: false
+  allowDuplicatedChangesetIdentifiers:
+    type: boolean
+    default: false
+    description: "Allows duplicated changeset identifiers without failing Liquibase execution."
+    required: false
+  alwaysDropInsteadOfReplace:
+    type: boolean
+    default: false
+    description: "If true, drop and recreate a view instead of replacing it."
+    required: false
+  alwaysOverrideStoredLogicSchema:
+    type: boolean
+    default: false
+    description: "When generating SQL for createProcedure, should the procedure schema be forced to the default schema if no schemaName attribute is set?"
+    required: false
+  analyticsConfigCacheTimeoutMillis:
+    type: number
+    description: "Liquibase caches the results from the config endpoint, and this value determines how long that cache should live for before being refreshed."
+    required: false
+  analyticsConfigEndpointTimeoutMillis:
+    type: number
+    description: ""
+    required: false
+  analyticsConfigEndpointUrl:
+    type: string
+    description: ""
+    required: false
+  analyticsDevOverride:
+    type: boolean
+    description: "By default, Liquibase will not send analytics in dev (non release) builds. To override this behavior, set this value to true and provide a value for liquibase.analytics.configEndpointUrl"
+    required: false
+  analyticsEnabled:
+    type: boolean
+    default: false
+    description: "Enable or disable sending product usage data and analytics to Liquibase."
+    required: false
+  analyticsLicenseKeyChars:
+    type: number
+    description: "Number of characters of the license key that should be appended to the userId. This is used in the event that the same customer has multiple license keys associated with them."
+    required: false
+  analyticsLogLevel:
+    type: string
+    default: "INFO"
+    description: 'Controls the detail level of analytics logs displayed to the user. Available options are: "SEVERE", "WARNING", "INFO", "FINE", "OFF"'
+    required: false
+  analyticsTimeoutMillis:
+    type: number
+    description: "By default, the timeout for sending data to the remote endpoint is configured in the config endpoint. Any value set here will override that value."
+    required: false
+  autoReorg:
+    type: boolean
+    default: true
+    description: "Should Liquibase automatically include REORG TABLE commands when needed?"
+    required: false
+  changeExecListenerClass:
+    type: string
+    description: "Fully-qualified class which specifies a ChangeExecListener"
+    required: false
+  changeExecListenerPropertiesFile:
+    type: string
+    description: "Path to a properties file for the ChangeExecListenerClass"
+    required: false
+  changelogFile:
+    type: string
+    description: "The root changelog."
+    required: true
+  changelogLockPollRate:
+    type: number
+    default: 10
+    description: "Number of seconds wait between checks to the changelog lock when it is locked"
+    required: false
+  changelogLockWaitTimeInMinutes:
+    type: number
+    default: 5
+    description: "Number of minutes to wait for the changelog lock to be available before giving up"
+    required: false
+  changelogParseMode:
+    type: string
+    description: "Configures how to handle unknown fields in changelog files. Possible values: STRICT which causes parsing to fail, and LAX which continues with the parsing."
+    required: false
+  checksCompatibilityEnabled:
+    type: boolean
+    description: "Enable liquibase-checks extension compatibility check.  Can be used when running tests to turn off the check."
+    required: false
+  classpath:
+    type: string
+    description: "Additional classpath entries to use."
+    required: false
+  contextFilter:
+    type: string
+    description: "Changeset contexts to match"
+    required: false
+  convertDataTypes:
+    type: boolean
+    default: true
+    description: "Should Liquibase convert to/from STANDARD data types. Applies to both snapshot and update commands."
+    required: false
+  customLogDataFile:
+    type: string
+    description: "[PRO]Relative or fully qualified path to a yaml file containing key:value data to inject or exclude data from JSON structured logs."
+    required: false
+  customLogDataFrequency:
+    type: string
+    description: '[PRO]The frequency that the custom log data will be entered into the logs. Available options are: "ONCE", "REPEATED"'
+  databaseChangelogLockTableName:
+    type: string
+    default: "DATABASECHANGELOGLOCK"
+    description: "Name of table to use for tracking concurrent Liquibase usage."
+    required: false
+  databaseChangelogTableName:
+    type: string
+    default: "DATABASECHANGELOG"
+    description: "Name of table to use for tracking change history."
+    required: false
+  databaseClass:
+    type: string
+    description: "Class to use for Database implementation. Liquibase automatically determines the correct class based on your database connection."
+    required: false
+  db2zDatabasechangelogIndex:
+    type: string
+    description: "The index name for the DATABASECHANGELOG table on DB2 z/OS"
+    required: false
+  db2zDatabasechangeloglockIndex:
+    type: string
+    description: "The index name for the DATABASECHANGELOGLOCK table on DB2 z/OS"
+    required: false
+  db2zTrackingTablesLocationDatabase:
+    type: string
+    description: "The database name for the Liquibase tracking tables on DB2 z/OS"
+    required: false
+  db2zTrackingTablesLocationTablespace:
+    type: string
+    description: "The tablespace name for the Liquibase tracking tables on DB2 z/OS"
+    required: false
+  dbclhistoryCaptureExtensions:
+    type: boolean
+    default: true
+    description: "If true, extensions are captured in the history table"
+    required: false
+  dbclhistoryCaptureSql:
+    type: boolean
+    default: true
+    description: "If true, executed SQL is captured in the history table"
+    required: false
+  dbclhistoryEnabled:
+    type: boolean
+    default: false
+    description: "[PRO]This property enables Liquibase Pro users to store a record of all database changing liquibase operations in a new table DATABASECHANGELOGHISTORY. This table includes records of rollback, dropalls, and repeated runOnChange type activity, which is not available in the standard DATABASECHANGELOG table."
+    required: false
+  dbclhistorySeverity:
+    type: number
+    default: 1
+    description: "The exit code to use if an exception is encountered while recording history events. Available options are: INFO (0), MINOR (1), MAJOR (2), CRITICAL (3), and BLOCKER (4)"
+    required: false
+  dbclhistoryTableName:
+    type: string
+    description: "Allows users to specify a custom name for the Liquibase DATABASECHANGELOGHISTORY table."
+    required: false
+  ddlLockTimeout:
+    type: number
+    description: "The DDL_LOCK_TIMEOUT parameter indicates the number of seconds a DDL command should wait for the locks to become available before throwing the resource busy error message. This applies only to Oracle databases."
+    required: false
+  defaultCatalogName:
+    type: string
+    description: "The default catalog name to use for the database connection"
+    required: false
+  defaultSchemaName:
+    type: string
+    description: "The default schema name to use for the database connection."
+    required: false
+  defaultsFile:
+    type: string
+    default: "liquibase.properties"
+    description: "File with default Liquibase properties"
+    required: false
+  diffColumnOrder:
+    type: boolean
+    default: true
+    description: "Should Liquibase compare column order in diff operation?"
+    required: false
+  driver:
+    type: string
+    description: "The JDBC driver class"
+    required: false
+  driverPropertiesFile:
+    type: string
+    description: "The JDBC driver properties file"
+    required: false
+  duplicateFileMode:
+    type: string
+    default: "ERROR"
+    description: "How to handle multiple files being found in the search path that have duplicate paths. Options are SILENT (do not log and choose one at random), DEBUG, INFO, WARN (log at the given level and choose one at random), or ERROR (fail current operation)."
+    required: false
+  errorOnCircularIncludeAll:
+    type: boolean
+    default: true
+    description: "Throw an error if Liquibase detects that an includeAll will cause a circular reference (and thus a changelog parse error)."
+    required: false
+  fileEncoding:
+    type: string
+    default: "UTF-8"
+    description: "Encoding to use when reading files. Valid values include: UTF-8, UTF-16, UTF-16BE, UTF-16LE, US-ASCII, or OS to use the system configured encoding."
+    required: false
+  flowVerboseToString:
+    type: boolean
+    default: false
+    description: "If true, display a more verbose output for the FlowFile toString representation"
+    required: false
+  generateChangesetCreatedValues:
+    type: boolean
+    default: false
+    description: 'Should Liquibase include a "created" attribute in diff/generateChangelog changesets with the current datetime'
+    required: false
+  generatedChangesetIdsContainsDescription:
+    type: boolean
+    default: false
+    description: "Should Liquibase include the change description in the id when generating changesets?"
+    required: false
+  headless:
+    type: boolean
+    default: false
+    description: "Force Liquibase to think it has no access to a keyboard"
+    required: false
+  includeCatalogInSpecification:
+    type: boolean
+    default: false
+    description: "Should Liquibase include the catalog name when determining equality?"
+    required: false
+  includeMatchingTagInRollbackOldest:
+    type: boolean
+    description: "If set to true, and there are multiple identical tags in the database changelog table, all of the newer matching tags will be rolled back while rolling back to the oldest tag. The default value for this option was false for all Liquibase versions equal to or older than 4.25.1."
+    required: false
+  includeRelationsForComputedColumns:
+    type: boolean
+    default: false
+    description: "If true, the parent relationship for computed columns is preserved in snapshot-dependent commands: snapshot and diff. Only applicable to Microsoft SQL Server and Oracle."
+    required: false
+  includeSchemaNameForDefault:
+    type: boolean
+    default: false
+    description: "If true, the schema name is included for the default schema when loading a snapshot"
+    required: false
+  includeSystemClasspath:
+    type: boolean
+    default: true
+    description: "Include the system classpath when resolving classes at runtime"
+    required: false
+  integrationName:
+    type: string
+    description: "The name of the integration used to invoke Liquibase, for example, cli, or JavaAPI. It is not required to specify this value. This is primarily used by wrappers around Liquibase (like Gradle), so that analytics can be differentiated for those integrations."
+    required: false
+  jclCreateLogFile:
+    type: boolean
+    default: false
+    description: "If true, then write to a JCL log file."
+    required: false
+  jclLogFilePath:
+    type: string
+    description: "Path to write JCL log output."
+    required: false
+  jclMinimumErrorReturnCode:
+    type: number
+    default: 1
+    description: "Minimum return code that is recognized as an error."
+    required: false
+  jclOverwriteLogFile:
+    type: boolean
+    default: false
+    description: "If true, overwrite any existing JCL log file."
+    required: false
+  labelFilter:
+    type: string
+    description: "Changeset labels to match"
+    required: false
+  licenseKey:
+    type: string
+    description: "Liquibase Pro or Liquibase Labs license key used to unlock paid capabilities."
+    required: false
+  licenseUtilityEnabled:
+    type: boolean
+    default: false
+    description: "Enable or disable sending license usage data."
+    required: false
+  licenseUtilityLogLevel:
+    type: string
+    default: "INFO"
+    description: 'Controls log verbosity for license usage utility. Accepted values: "SEVERE", "WARNING", "INFO", "FINE", "OFF".'
+    required: false
+  licenseUtilityTimeout:
+    type: number
+    default: 5000
+    description: "Maximum wait time in milliseconds for license usage HTTP request to complete."
+    required: false
+  licenseUtilityTrackingId:
+    type: string
+    description: "Custom tracking identifier (e.g., team name, pipeline ID) for license usage. Defaults to host and user if unspecified."
+    required: false
+  licenseUtilityUrl:
+    type: string
+    default: "https://hub.liquibase.com"
+    description: "URL endpoint to send license usage data."
+    required: false
+  liquibaseCatalogName:
+    type: string
+    description: "Catalog to use for Liquibase objects."
+    required: false
+  liquibaseSchemaName:
+    type: string
+    description: "Schema to use for Liquibase objects."
+    required: false
+  liquibaseTablespaceName:
+    type: string
+    description: "Tablespace to use for Liquibase objects."
+    required: false
+  logChannels:
+    type: string
+    default: "liquibase"
+    description: 'Controls which log channels have their level set by the liquibase.logLevel setting. Comma separate multiple values. To set the level of all channels, use "all". Example: liquibase,org.mariadb.jdbc'
+    required: false
+  logFile:
+    type: string
+    description: "Users can use .gz file extension to enable log files compression."
+    required: false
+  logFormat:
+    type: string
+    default: "TEXT"
+    description: 'Sets the format of log output to console or log files. Open Source users default to unstructured "TEXT" logs. Pro users may use "JSON" or "JSON_PRETTY" for structured logging.'
+    required: false
+  logLevel:
+    type: string
+    default: "FINE"
+    description: "Controls which logs are sent to stderr and any log file. CLI defaults to SEVERE when a log file is set. Valid levels: OFF, SEVERE, WARNING, INFO, FINE."
+    required: false
+  mirrorConsoleMessagesToLog:
+    type: boolean
+    default: true
+    description: "If true, console messages are mirrored to logs as [liquibase.ui] for more complete log analysis."
+    required: false
+  mirrorOutputToConsole:
+    type: boolean
+    default: false
+    description: "[PRO] If true, console output is mirrored to both the output file and the console. Has no effect if output file is not set."
+    required: false
+  missingPropertyMode:
+    type: string
+    description: 'How to handle property expressions without values. Options: "preserve", "empty", "error".'
+    required: false
+  monitorPerformance:
+    type: boolean
+    default: false
+    description: 'Enables performance tracking. Set to "false" to disable. If "true", writes to liquibase-TIMESTAMP.jfr. Any other value is used as the output file name.'
+    required: false
+  mysqlEnableDbclPrimaryKey:
+    type: boolean
+    default: false
+    description: "[PRO] Enables composite primary key for new DBCL tables. Disabled by default."
+    required: false
+  nativeExecutor:
+    type: string
+    description: "Name of a custom executor to use."
+    required: false
+  onMissingIncludeChangelog:
+    type: string
+    default: "FAIL"
+    description: "If set to WARN, Liquibase logs a warning instead of throwing an error for missing include changelogs."
+    required: false
+  onMissingSqlFile:
+    type: string
+    description: "If set to WARN, Liquibase logs a warning instead of failing when a referenced SQL file is missing."
+    required: false
+  outputFile:
+    type: string
+    description: "Path to the file where Liquibase will write output."
+    required: false
+  outputFileEncoding:
+    type: string
+    default: "UTF-8"
+    description: "Encoding to use when writing output files."
+    required: false
+  outputLineSeparator:
+    type: string
+    default: "\n"
+    description: "Line separator to use in generated output files."
+    required: false
+  password:
+    type: string
+    description: "Password to use to connect to the database."
+    required: false
+  preserveClasspathPrefixInNormalizedPaths:
+    type: boolean
+    default: false
+    description: 'If true, preserves the "classpath:" prefix in normalized paths to support hierarchical resource resolution.'
+    required: false
+  preserveSchemaCase:
+    type: boolean
+    description: "If true, Liquibase treats schema and catalog names as case-sensitive."
+    required: false
+  proForceOnPartialChanges:
+    type: boolean
+    description: "If true, forces rollback execution when partial changes are detected. Defaults to false."
+    required: false
+  proGlobalEndDelimiter:
+    type: string
+    default: ";"
+    description: "[PRO] Default end delimiter for all change sets."
+    required: false
+  proGlobalEndDelimiterPrioritized:
+    type: boolean
+    default: false
+    description: "[PRO] If true, the global end delimiter overrides other settings."
+    required: false
+  proGlobalStripComments:
+    type: boolean
+    default: true
+    description: "[PRO] Default setting to strip comments in all change sets."
+    required: false
+  proGlobalStripCommentsPrioritized:
+    type: boolean
+    default: false
+    description: "[PRO] If true, the global strip comments setting overrides other configurations."
+    required: false
+  proLicenseKey:
+    type: string
+    description: "DEPRECATED: License key for Liquibase Pro. Use liquibase.pro.licenseKey=<yourKey> or CLI parameter."
+    required: false
+  proMarkUnusedNotDrop:
+    type: boolean
+    description: "If true, diffChangeLog will mark unused columns instead of dropping them."
+    required: false
+  promptForNonLocalDatabase:
+    type: boolean
+    description: "Should Liquibase prompt if a non-local database is being accessed"
+    required: false
+  propertyProviderClass:
+    type: boolean
+    description: "Should Liquibase prompt if a non-local database is being accessed"
+    required: false
+  proSqlInline:
+    type: boolean
+    description: "If true, generates SQL-based changeSets inline instead of using external files."
+    required: false
+  proStrict:
+    type: boolean
+    default: false
+    description: "[PRO] If true, Liquibase fails if referenced Pro files (flow, native executor, rollback, etc.) are missing or empty."
+    required: false
+  proSynonymsDropPublic:
+    type: boolean
+    description: "If false, public synonyms are not dropped in diffChangeLog or dropAll."
+    required: false
+  reportEnabled:
+    type: boolean
+    description: "[PRO] Enable or disable reporting."
+    required: false
+  reportName:
+    type: string
+    description: "[PRO] The name of the report."
+    required: false
+  reportPath:
+    type: string
+    description: "[PRO] The path to the directory to generate the report."
+    required: false
+  reportsEnabled:
+    type: boolean
+    description: "[PRO]Enable or disable reporting."
+    required: false
+  reportsFormat:
+    type: string
+    description: '[PRO] Format of reports. Currently supported: "html".'
+    required: false
+  reportsName:
+    type: string
+    description: "[PRO] The report name to use for generated reports."
+    required: false
+  reportsOpen:
+    type: boolean
+    description: "[PRO] If true, automatically opens the generated report in the default browser."
+    required: false
+  reportsPath:
+    type: string
+    description: "[PRO] Directory path where reports should be generated."
+    required: false
+  reportsQuiet:
+    type: boolean
+    description: "[PRO] Reduces logging output when generating reports."
+    required: false
+  reportsSuppressException:
+    type: boolean
+    description: "[PRO] Suppresses exceptions from being shown in operation reports."
+    required: false
+  reportsSuppressSql:
+    type: boolean
+    description: "[PRO] Suppresses SQL content in operation reports."
+    required: false
+  rollbackOnError:
+    type: boolean
+    default: false
+    description: "If true, roll back changes if any changeset fails during deployment."
+    required: false
+  scriptPythonExecutablePath:
+    type: string
+    description: "Path to the Python executable used for running Liquibase script commands."
+    required: false
+  searchPath:
+    type: string
+    description: "Comma-separated list of locations to search for changelogs and other Liquibase files."
+    required: false
+  secureParsing:
+    type: boolean
+    description: "If true, disables insecure features in file parsers, such as remote XML entity loading."
+    required: false
+  shouldRun:
+    type: boolean
+    default: true
+    description: "If false, Liquibase commands will not execute."
+    required: false
+  shouldSnapshotData:
+    type: boolean
+    default: false
+    description: "If true, Liquibase will include data in snapshots."
+    required: false
+  showBanner:
+    type: boolean
+    default: true
+    description: "If true, show the Liquibase banner on startup."
+    required: false
+  showSummary:
+    type: string
+    default: "summary"
+    description: 'Type of update results summary to show. Valid values: "off", "summary", "verbose".'
+    required: false
+  showSummaryOutput:
+    type: string
+    default: "console"
+    description: 'Where to output update summary results. Valid values: "log", "console", "all".'
+    required: false
+  snowflakeAuthPrivateKeyPassphrase:
+    type: string
+    description: '[PRO]Path to private key used for PKI Authentication type. Usually requires "snowflake-auth-type" property configured.'
+    required: false
+  snowflakeAuthPrivateKeyPath:
+    type: string
+    description: '[PRO]Path to private key used for PKI Authentication type. Usually requires "snowflake-auth-type" property configured.'
+    required: false
+  snowflakeAuthToken:
+    type: string
+    description: '[PRO]Value of the token used for specified Authentication type. Usually requires "snowflake-auth-type" property configured.'
+    required: false
+  snowflakeAuthType:
+    type: string
+    description: "[PRO]The type or mechanism of Snowflake database authentication"
+    required: false
+  sqlAlwaysSetFetchSize:
+    type: boolean
+    description: "If true, all queries will have their fetch size set to the fetch size defined in their database implementation. This has the effect of informing the driver how many rows should be fetched when processing the result set. This is not guaranteed to be respected by the driver, but if respected, should improve query performance significantly."
+    required: false
+  sqlLogLevel:
+    type: string
+    default: "FINE"
+    description: 'Level to log SQL statements. Valid values: "SEVERE", "WARNING", "INFO", "FINE", "OFF".'
+    required: false
+  sqlShowSqlWarnings:
+    type: boolean
+    default: true
+    description: "If true, show SQL warning messages during execution."
+    required: false
+  strict:
+    type: boolean
+    description: "If true, Liquibase enforces certain best practices and proactively looks for common errors"
+    required: false
+  supportPropertyEscaping:
+    type: boolean
+    description: "Support escaping changelog parameters using a colon. Example: ${:user.name}"
+    required: false
+  supportsMethodValidationLevel:
+    type: string
+    default: "WARN"
+    description: 'Controls the level of validation performed on the supports method of Change classes. Options are "OFF", "WARN", "FAIL".'
+    required: false
+  suppressLiquibaseSql:
+    type: boolean
+    default: false
+    description: "When set to true, this global property prevents DBCL and DBCLH sql from being present in console and logs during *-sql commands, such as update-sql, rollback-sql, etc."
+    required: false
+  trimLoadDataFileHeader:
+    type: boolean
+    default: false
+    description: "If true column headers will be trimmed in case they were specified with spaces in the file."
+    required: false
+  uiService:
+    type: string
+    default: "CONSOLE"
+    description: 'Changes the default UI Service Logger used by Liquibase. Options are "CONSOLE" or "LOGGER".'
+    required: false
+  url:
+    type: string
+    description: "The JDBC database connection URL."
+    required: true
+  useProcedureSchema:
+    type: boolean
+    description: "If set to true (default value), createProcedure tags with a set schemaName will modify the procedure body with the given schema name."
+    required: true
+  username:
+    type: string
+    description: "Username to use to connect to the database."
+    required: false
+  validateXmlChangelogFiles:
+    type: boolean
+    default: true
+    description: "If true, perform XSD validation on XML changelog files. May impact performance when many files are included."
+    required: false
+  workaroundOracleClobCharacterLimit:
+    type: boolean
+    description: 'If true, long strings in Oracle will be chunked at 4000 characters when an insert statement is run, to avoid running afoul of Oracle"s 4000 character limit for insert statements to clob type columns (which appears as "ORA-01704: string literal too long.")'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🧩 Liquibase Update Action ᵛ⁴·³³·⁰
+      uses: liquibase-github-actions/update@v4.33.0
+      with:
+        addEmptyMdcValues: ${{ inputs.addEmptyMdcValues }}
+        allowDuplicatedChangesetIdentifiers: ${{ inputs.allowDuplicatedChangesetIdentifiers }}
+        alwaysDropInsteadOfReplace: ${{ inputs.alwaysDropInsteadOfReplace }}
+        alwaysOverrideStoredLogicSchema: ${{ inputs.alwaysOverrideStoredLogicSchema }}
+        analyticsConfigCacheTimeoutMillis: ${{ inputs.analyticsConfigCacheTimeoutMillis }}
+        analyticsConfigEndpointTimeoutMillis: ${{ inputs.analyticsConfigEndpointTimeoutMillis }}
+        analyticsConfigEndpointUrl: ${{ inputs.analyticsConfigEndpointUrl }}
+        analyticsDevOverride: ${{ inputs.analyticsDevOverride }}
+        analyticsEnabled: ${{ inputs.analyticsEnabled }}
+        analyticsLicenseKeyChars: ${{ inputs.analyticsLicenseKeyChars }}
+        analyticsLogLevel: ${{ inputs.analyticsLogLevel }}
+        analyticsTimeoutMillis: ${{ inputs.analyticsTimeoutMillis }}
+        autoReorg: ${{ inputs.autoReorg }}
+        changeExecListenerClass: ${{ inputs.changeExecListenerClass }}
+        changeExecListenerPropertiesFile: ${{ inputs.changeExecListenerPropertiesFile }}
+        changelogFile: ${{ inputs.changelogFile }}
+        changelogLockPollRate: ${{ inputs.changelogLockPollRate }}
+        changelogLockWaitTimeInMinutes: ${{ inputs.changelogLockWaitTimeInMinutes }}
+        changelogParseMode: ${{ inputs.changelogParseMode }}
+        checksCompatibilityEnabled: ${{ inputs.checksCompatibilityEnabled }}
+        classpath: ${{ inputs.classpath }}
+        contextFilter: ${{ inputs.contextFilter }}
+        convertDataTypes: ${{ inputs.convertDataTypes }}
+        customLogDataFile: ${{ inputs.customLogDataFile }}
+        customLogDataFrequency: ${{ inputs.customLogDataFrequency }}
+        databaseChangelogLockTableName: ${{ inputs.databaseChangelogLockTableName }}
+        databaseChangelogTableName: ${{ inputs.databaseChangelogTableName }}
+        databaseClass: ${{ inputs.databaseClass }}
+        db2zDatabasechangelogIndex: ${{ inputs.db2zDatabasechangelogIndex }}
+        db2zDatabasechangeloglockIndex: ${{ inputs.db2zDatabasechangeloglockIndex }}
+        db2zTrackingTablesLocationDatabase: ${{ inputs.db2zTrackingTablesLocationDatabase }}
+        db2zTrackingTablesLocationTablespace: ${{ inputs.db2zTrackingTablesLocationTablespace }}
+        dbclhistoryCaptureExtensions: ${{ inputs.dbclhistoryCaptureExtensions }}
+        dbclhistoryCaptureSql: ${{ inputs.dbclhistoryCaptureSql }}
+        dbclhistoryEnabled: ${{ inputs.dbclhistoryEnabled }}
+        dbclhistorySeverity: ${{ inputs.dbclhistorySeverity }}
+        dbclhistoryTableName: ${{ inputs.dbclhistoryTableName }}
+        ddlLockTimeout: ${{ inputs.ddlLockTimeout }}
+        defaultCatalogName: ${{ inputs.defaultCatalogName }}
+        defaultSchemaName: ${{ inputs.defaultSchemaName }}
+        defaultsFile: ${{ inputs.defaultsFile }}
+        diffColumnOrder: ${{ inputs.diffColumnOrder }}
+        driver: ${{ inputs.driver }}
+        driverPropertiesFile: ${{ inputs.driverPropertiesFile }}
+        duplicateFileMode: ${{ inputs.duplicateFileMode }}
+        errorOnCircularIncludeAll: ${{ inputs.errorOnCircularIncludeAll }}
+        fileEncoding: ${{ inputs.fileEncoding }}
+        flowVerboseToString: ${{ inputs.flowVerboseToString }}
+        generateChangesetCreatedValues: ${{ inputs.generateChangesetCreatedValues }}
+        generatedChangesetIdsContainsDescription: ${{ inputs.generatedChangesetIdsContainsDescription }}
+        headless: ${{ inputs.headless }}
+        includeCatalogInSpecification: ${{ inputs.includeCatalogInSpecification }}
+        includeMatchingTagInRollbackOldest: ${{ inputs.includeMatchingTagInRollbackOldest }}
+        includeRelationsForComputedColumns: ${{ inputs.includeRelationsForComputedColumns }}
+        includeSchemaNameForDefault: ${{ inputs.includeSchemaNameForDefault }}
+        includeSystemClasspath: ${{ inputs.includeSystemClasspath }}
+        integrationName: ${{ inputs.integrationName }}
+        jclCreateLogFile: ${{ inputs.jclCreateLogFile }}
+        jclLogFilePath: ${{ inputs.jclLogFilePath }}
+        jclMinimumErrorReturnCode: ${{ inputs.jclMinimumErrorReturnCode }}
+        jclOverwriteLogFile: ${{ inputs.jclOverwriteLogFile }}
+        labelFilter: ${{ inputs.labelFilter }}
+        licenseKey: ${{ inputs.licenseKey }}
+        licenseUtilityEnabled: ${{ inputs.licenseUtilityEnabled }}
+        licenseUtilityLogLevel: ${{ inputs.licenseUtilityLogLevel }}
+        licenseUtilityTimeout: ${{ inputs.licenseUtilityTimeout }}
+        licenseUtilityTrackingId: ${{ inputs.licenseUtilityTrackingId }}
+        licenseUtilityUrl: ${{ inputs.licenseUtilityUrl }}
+        liquibaseCatalogName: ${{ inputs.liquibaseCatalogName }}
+        liquibaseSchemaName: ${{ inputs.liquibaseSchemaName }}
+        liquibaseTablespaceName: ${{ inputs.liquibaseTablespaceName }}
+        logChannels: ${{ inputs.logChannels }}
+        logFile: ${{ inputs.logFile }}
+        logFormat: ${{ inputs.logFormat }}
+        logLevel: ${{ inputs.logLevel }}
+        mirrorConsoleMessagesToLog: ${{ inputs.mirrorConsoleMessagesToLog }}
+        mirrorOutputToConsole: ${{ inputs.mirrorOutputToConsole }}
+        missingPropertyMode: ${{ inputs.missingPropertyMode }}
+        monitorPerformance: ${{ inputs.monitorPerformance }}
+        mysqlEnableDbclPrimaryKey: ${{ inputs.mysqlEnableDbclPrimaryKey }}
+        nativeExecutor: ${{ inputs.nativeExecutor }}
+        onMissingIncludeChangelog: ${{ inputs.onMissingIncludeChangelog }}
+        onMissingSqlFile: ${{ inputs.onMissingSqlFile }}
+        outputFile: ${{ inputs.outputFile }}
+        outputFileEncoding: ${{ inputs.outputFileEncoding }}
+        outputLineSeparator: ${{ inputs.outputLineSeparator }}
+        password: ${{ inputs.password }}
+        preserveClasspathPrefixInNormalizedPaths: ${{ inputs.preserveClasspathPrefixInNormalizedPaths }}
+        preserveSchemaCase: ${{ inputs.preserveSchemaCase }}
+        proForceOnPartialChanges: ${{ inputs.proForceOnPartialChanges }}
+        proGlobalEndDelimiter: ${{ inputs.proGlobalEndDelimiter }}
+        proGlobalEndDelimiterPrioritized: ${{ inputs.proGlobalEndDelimiterPrioritized }}
+        proGlobalStripComments: ${{ inputs.proGlobalStripComments }}
+        proGlobalStripCommentsPrioritized: ${{ inputs.proGlobalStripCommentsPrioritized }}
+        proLicenseKey: ${{ inputs.proLicenseKey }}
+        proMarkUnusedNotDrop: ${{ inputs.proMarkUnusedNotDrop }}
+        proSqlInline: ${{ inputs.proSqlInline }}
+        proStrict: ${{ inputs.proStrict }}
+        proSynonymsDropPublic: ${{ inputs.proSynonymsDropPublic }}
+        promptForNonLocalDatabase: ${{ inputs.promptForNonLocalDatabase }}
+        propertyProviderClass: ${{ inputs.propertyProviderClass }}
+        reportEnabled: ${{ inputs.reportEnabled }}
+        reportName: ${{ inputs.reportName }}
+        reportPath: ${{ inputs.reportPath }}
+        reportsEnabled: ${{ inputs.reportsEnabled }}
+        reportsFormat: ${{ inputs.reportsFormat }}
+        reportsName: ${{ inputs.reportsName }}
+        reportsOpen: ${{ inputs.reportsOpen }}
+        reportsPath: ${{ inputs.reportsPath }}
+        reportsQuiet: ${{ inputs.reportsQuiet }}
+        reportsSuppressException: ${{ inputs.reportsSuppressException }}
+        reportsSuppressSql: ${{ inputs.reportsSuppressSql }}
+        rollbackOnError: ${{ inputs.rollbackOnError }}
+        scriptPythonExecutablePath: ${{ inputs.scriptPythonExecutablePath }}
+        searchPath: ${{ inputs.searchPath }}
+        secureParsing: ${{ inputs.secureParsing }}
+        shouldRun: ${{ inputs.shouldRun }}
+        shouldSnapshotData: ${{ inputs.shouldSnapshotData }}
+        showBanner: ${{ inputs.showBanner }}
+        showSummary: ${{ inputs.showSummary }}
+        showSummaryOutput: ${{ inputs.showSummaryOutput }}
+        snowflakeAuthPrivateKeyPassphrase: ${{ inputs.snowflakeAuthPrivateKeyPassphrase }}
+        snowflakeAuthPrivateKeyPath: ${{ inputs.snowflakeAuthPrivateKeyPath }}
+        snowflakeAuthToken: ${{ inputs.snowflakeAuthToken }}
+        snowflakeAuthType: ${{ inputs.snowflakeAuthType }}
+        sqlAlwaysSetFetchSize: ${{ inputs.sqlAlwaysSetFetchSize }}
+        sqlLogLevel: ${{ inputs.sqlLogLevel }}
+        sqlShowSqlWarnings: ${{ inputs.sqlShowSqlWarnings }}
+        strict: ${{ inputs.strict }}
+        supportPropertyEscaping: ${{ inputs.supportPropertyEscaping }}
+        supportsMethodValidationLevel: ${{ inputs.supportsMethodValidationLevel }}
+        suppressLiquibaseSql: ${{ inputs.suppressLiquibaseSql }}
+        trimLoadDataFileHeader: ${{ inputs.trimLoadDataFileHeader }}
+        uiService: ${{ inputs.uiService }}
+        url: ${{ inputs.url }}
+        useProcedureSchema: ${{ inputs.useProcedureSchema }}
+        username: ${{ inputs.username }}
+        validateXmlChangelogFiles: ${{ inputs.validateXmlChangelogFiles }}
+        workaroundOracleClobCharacterLimit: ${{ inputs.workaroundOracleClobCharacterLimit }}

@@ -1,0 +1,35 @@
+name: '🏗️ HashiCorp - Setup Terraform'
+description: 'Sets up Terraform CLI in your GitHub Actions workflow.'
+
+inputs:
+  cli_config_credentials_hostname:
+    type: string
+    default: 'app.terraform.io'
+    description: 'Terraform Cloud/Enterprise hostname for CLI credentials.'
+    required: false
+  cli_config_credentials_token:
+    type: string
+    default: null
+    description: 'API token for authenticating with Terraform Cloud/Enterprise.'
+    required: false
+  terraform_version:
+    type: string
+    default: 'latest'
+    description: 'Terraform CLI version or constraint (e.g. `<1.13.0`). `latest` installs the newest version.'
+    required: false
+  terraform_wrapper:
+    type: boolean
+    default: true
+    description: 'Install a wrapper to expose Terraform`s STDOUT, STDERR, and exit code as outputs.'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🧩 HashiCorp - Setup Terraform ᵛ²
+      uses: hashicorp/setup-terraform@v2
+      with:
+        cli_config_credentials_hostname: ${{ inputs.cli_config_credentials_hostname }}
+        cli_config_credentials_token: ${{ inputs.cli_config_credentials_token }}
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: ${{ inputs.terraform_wrapper }}

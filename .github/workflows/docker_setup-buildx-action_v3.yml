@@ -1,0 +1,120 @@
+name: '🐳 Docker Setup Buildx ᵛ³'
+description: 'Set up Docker Buildx'
+
+on:
+  workflow_call:
+    inputs:
+      append:
+        type: string
+        default: null
+        description: 'Append additional nodes to the builder'
+        required: false
+      buildkitd-config:
+        type: string
+        default: null
+        description: 'BuildKit daemon config file'
+        required: false
+      buildkitd-config-inline:
+        type: string
+        default: null
+        description: 'Inline BuildKit daemon config'
+        required: false
+      buildkitd-flags:
+        type: string
+        default: null
+        description: 'BuildKit daemon flags'
+        required: false
+      cache-binary:
+        type: boolean
+        default: true
+        description: 'Cache buildx binary to GitHub Actions cache backend'
+        required: false
+      cleanup:
+        type: boolean
+        default: true
+        description: 'Cleanup temp files and remove builder at the end of a job'
+        required: false
+      driver:
+        type: string
+        default: 'docker-container'
+        description: 'Sets the builder driver to be used'
+        required: false
+      driver-opts:
+        type: string
+        default: null
+        description: 'List of additional driver-specific options. (eg. image=moby/buildkit:master)'
+        required: false
+      endpoint:
+        type: string
+        default: null
+        description: 'Optional address for docker socket or context from `docker context ls`'
+        required: false
+      install:
+        type: boolean
+        default: false
+        description: 'Sets up docker build command as an alias to docker buildx build'
+        required: false
+      keep-state:
+        type: boolean
+        default: false
+        description: 'Keep BuildKit state on cleanup. This is only useful on persistent self-hosted runners.'
+        required: false
+      name:
+        type: string
+        default: null
+        description: 'Name of the builder. If not specified, one will be generated or if it already exists, it will be used instead of creating a new one.'
+        required: false
+      platforms:
+        type: string
+        default: null
+        description: 'Fixed platforms for current node. If not empty, values take priority over the detected ones'
+        required: false
+      use:
+        type: boolean
+        default: true
+        description: 'Switch to this builder instance'
+        required: false
+      version:
+        type: string
+        default: null
+        description: 'Buildx version. (eg. v0.3.0)'
+        required: false
+    outputs:
+      driver:
+        value: ${{ jobs.job_docker_setup-buildx-action_v3.outputs.driver }}
+        description: 'Builder driver'
+      name:
+        value: ${{ jobs.job_docker_setup-buildx-action_v3.outputs.name }}
+        description: 'Builder name'
+      nodes:
+        value: ${{ jobs.job_docker_setup-buildx-action_v3.outputs.nodes }}
+        description: 'Builder nodes metadata'
+      platforms:
+        value: ${{ jobs.job_docker_setup-buildx-action_v3.outputs.platforms }}
+        description: 'Builder node platforms (preferred or available)'
+
+jobs:
+  job_docker_setup-buildx-action_v3:
+    name: 🧩 Docker Setup Buildx ᵛ³
+    runs-on: ubuntu-22.04
+    environment: ${{ github.ref }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    steps:
+      - name: Step - Docker Setup Buildx
+        id: step_docker_setup-buildx-action_v3
+        uses: docker/setup-buildx-action@v3
+        with:
+          cache-binary: ${{ inputs.cache-binary }}
+          cleanup: ${{ inputs.cleanup }}
+          driver: ${{ inputs.driver }}
+          install: ${{ inputs.install }}
+          keep-state: ${{ inputs.keep-state }}
+          use: ${{ inputs.use }}
+    outputs:
+      driver: ${{ steps.step_docker_setup-buildx-action_v3.outputs.driver }}
+      name: ${{ steps.step_docker_setup-buildx-action_v3.outputs.name }}
+      nodes: ${{ steps.step_docker_setup-buildx-action_v3.outputs.nodes }}
+      platforms: ${{ steps.step_docker_setup-buildx-action_v3.outputs.platforms }}
