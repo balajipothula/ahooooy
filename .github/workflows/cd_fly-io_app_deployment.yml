@@ -109,7 +109,7 @@ jobs:
         working-directory: go
         env:
           MAIN: ${{ steps.append-utc-now.outputs.main }}
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /tmp/$MAIN ./go/main.go
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /tmp/$MAIN main.go
       - name: Step - Install Ultimate Packer for eXecutables
         run: sudo apt --yes update && sudo apt --yes install upx
       - name: Compress Go Artifact with UPX
