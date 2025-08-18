@@ -78,6 +78,7 @@ jobs:
   job_build_push_go_artifact:
     name: 🐹 Build & Push Go Artifact
     if: ${{ inputs.build_push_go_artifact }}
+    needs: [job_fly_app_create]
     runs-on: ubuntu-22.04
     outputs:
       main: ${{ steps.append-utc-now.outputs.main }}
