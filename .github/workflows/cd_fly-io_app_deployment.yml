@@ -4,7 +4,7 @@ description: 'Continuous delivery action to provision Fly.io infrastructure and 
 on:
   workflow_dispatch:
     inputs:
-      fly-app-create: 
+      fly_app_create: 
         type: boolean
         default: false
         description: 'Create Fly.io App'
@@ -14,7 +14,7 @@ on:
         default: false
         description: 'Build and Push Go Artifact'
         required: false
-      fly-app-update: 
+      fly_app_update: 
         type: boolean
         default: false
         description: 'Deploy Fly.io App'
@@ -31,9 +31,9 @@ env:
   REGION: fra
 
 jobs:
-  job_fly-app-create:
+  job_fly_app_create:
     name: 🪂 Fly App Creation
-    if: ${{ inputs.fly-app-create }}
+    if: ${{ inputs.fly_app_create }}
     runs-on: ubuntu-22.04
     env:
       VM_NAME: 'go-fiber-vm'
@@ -78,7 +78,6 @@ jobs:
   job_build_push_go_artifact:
     name: 🐹 Build & Push Go Artifact
     if: ${{ inputs.build_push_go_artifact }}
-    needs: [job_fly-app-create]
     runs-on: ubuntu-22.04
     outputs:
       main: ${{ steps.append-utc-now.outputs.main }}
@@ -144,9 +143,9 @@ jobs:
         env:
           MAIN: ${{ steps.append-utc-now.outputs.main }}
         run: flyctl ssh console --app="$APP" --command "chmod +x /gofiber/$MAIN"
-  job_fly-app-update:
+  job_fly_app_update:
     name: 🪂 Fly App Update
-    if: ${{ inputs.fly-app-update }}
+    if: ${{ inputs.fly_app_update }}
     needs: [job_build_push_go_artifact]
     runs-on: ubuntu-22.04
     defaults:
