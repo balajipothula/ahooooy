@@ -46,7 +46,7 @@ env:
 jobs:
   job_fly_app_create:
     name: 🪂 Fly App Creation
-    if: ${{ inputs.fly_app_name != '' && inputs.fly_app_create == 'true' }}
+    if: ${{ inputs.fly_app_create == 'true' }}
     runs-on: ubuntu-22.04
     env:
       VM_NAME: 'go-fiber-vm'
