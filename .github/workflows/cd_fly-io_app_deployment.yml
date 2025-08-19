@@ -4,17 +4,22 @@ description: 'Continuous delivery action to provision Fly.io infrastructure and 
 on:
   workflow_dispatch:
     inputs:
-      fly_app_create: 
+      fly_app_name:
+        type: string
+        default: go-fiber-app
+        description: 'Unique Fly.io App Name:'
+        required: true
+      fly_app_create:
         type: boolean
         default: false
         description: 'Create Fly.io App'
         required: false
-      build_push_go_artifact: 
+      build_push_go_artifact:
         type: boolean
         default: false
         description: 'Build and Push Go Artifact'
         required: false
-      fly_app_update: 
+      fly_app_update:
         type: boolean
         default: false
         description: 'Deploy Fly.io App'
@@ -26,7 +31,7 @@ permissions:
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   FLY_VERSION: 0.3.167
-  APP: go-fiber-app
+  APP: ${{ inputs.fly_app_name }}
   ORG: personal
   REGION: fra
 
