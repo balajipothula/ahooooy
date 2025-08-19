@@ -1,13 +1,21 @@
 name: '🚀 CD • Fly.io • App Deployment'
 description: 'Continuous delivery action to provision Fly.io infrastructure and app deployment using flyctl'
 
+# This workflow requires the following configuration in Github
+#
+# Variables:
+#   FLY_VERSION - Specific version of the Fly CLI to avoid unexpected changes.
+#
+# Secrets:
+#   FLY_API_TOKEN - Authentication token used to interact with Fly.io's API or CLI
+
 on:
   workflow_dispatch:
     inputs:
       fly_app_name:
         type: string
         default: go-fiber-app
-        description: 'Unique Fly.io App Name:'
+        description: 'Unique Fly.io App name'
         required: true
       fly_app_create:
         type: boolean
@@ -30,15 +38,15 @@ permissions:
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-  FLY_VERSION: 0.3.167
+  FLY_VERSION: ${{ vars.FLY_VERSION  || '0.3.167' }}
   APP: ${{ inputs.fly_app_name }}
-  ORG: personal
-  REGION: fra
+  ORG: ${{ vars.FLY_ORG || 'personal' }}
+  REGION: ${{ vars.FLY_REGION || 'fra' }}
 
 jobs:
   job_fly_app_create:
     name: 🪂 Fly App Creation
-    if: ${{ inputs.fly_app_create }}
+    if: ${{ inputs.fly_app_name != '' && inputs.fly_app_create == 'true' }}
     runs-on: ubuntu-22.04
     env:
       VM_NAME: 'go-fiber-vm'
@@ -50,6 +58,7 @@ jobs:
       - name: Step - Checkout
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           repository: '${{ github.repository }}'
           token: '${{ github.token }}'
       - name: Step - flyctl Setup ᵛ⁰·³·¹⁶⁷
@@ -82,8 +91,8 @@ jobs:
           fi
   job_build_push_go_artifact:
     name: 🐹 Build & Push Go Artifact
-    if: ${{ inputs.build_push_go_artifact }}
     needs: [job_fly_app_create]
+    if: ${{ inputs.build_push_go_artifact  == 'true' }}
     runs-on: ubuntu-22.04
     outputs:
       main: ${{ steps.append-utc-now.outputs.main }}
@@ -91,6 +100,7 @@ jobs:
       - name: Step - Checkout
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           repository: '${{ github.repository }}'
           token: '${{ github.token }}'
       - name: Step - Setup Go Environment ᵛ⁵
@@ -151,8 +161,8 @@ jobs:
         run: flyctl ssh console --app="$APP" --command "chmod +x /gofiber/$MAIN"
   job_fly_app_update:
     name: 🪂 Fly App Update
-    if: ${{ inputs.fly_app_update }}
     needs: [job_build_push_go_artifact]
+    if: ${{ inputs.fly_app_update  == 'true' }}
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -161,6 +171,7 @@ jobs:
       - name: Step - Checkout
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           repository: '${{ github.repository }}'
           token: '${{ github.token }}'
       - name: Step - flyctl Setup ᵛ⁰·³·¹⁶⁷
