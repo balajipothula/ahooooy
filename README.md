@@ -2,7 +2,6 @@
 
 ✨ A dynamic, feathery [GoFiber](https://gofiber.io/) web application, ready to **fly** with just one click! this repo enables **fully automated deployment**  — no manual steps required.  
 🙏 **Thanks to 🪂 [Fly.io](https://fly.io) for supporting developers with a free Hobby Plan — including 3 machines (shared-cpu-1x, 256MB each).**  
-This generous offering makes it easy for indie developers and open-source projects to experiment, build, and deploy applications at no cost. 🚀
 
 ---
 
