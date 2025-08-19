@@ -46,7 +46,7 @@ env:
 jobs:
   job_fly_app_create:
     name: 🪂 Fly App Creation
-    if: ${{ inputs.fly_app_create == true }}
+    if: ${{ inputs.fly_app_name != '' && inputs.fly_app_create }}
     runs-on: ubuntu-22.04
     env:
       VM_NAME: 'go-fiber-vm'
@@ -92,7 +92,7 @@ jobs:
   job_build_push_go_artifact:
     name: 🐹 Build & Push Go Artifact
     needs: [job_fly_app_create]
-    if: ${{ inputs.build_push_go_artifact  == 'true' }}
+    if: ${{ inputs.build_push_go_artifact }}
     runs-on: ubuntu-22.04
     outputs:
       main: ${{ steps.append-utc-now.outputs.main }}
@@ -162,7 +162,7 @@ jobs:
   job_fly_app_update:
     name: 🪂 Fly App Update
     needs: [job_build_push_go_artifact]
-    if: ${{ inputs.fly_app_update  == 'true' }}
+    if: ${{ inputs.fly_app_update }}
     runs-on: ubuntu-22.04
     defaults:
       run:
