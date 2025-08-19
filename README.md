@@ -7,22 +7,14 @@ Thanks to [GitHub Actions](.github/workflows/cd_fly-io_app_deployment.yml), this
 
 ## 🌟 Features
 
-# 🚀 GoFiber App — One-Click Deployment into Fly.io 
-
-✨ A dynamic, feathery [GoFiber](https://gofiber.io/) web application, ready to **fly** with just one click!  
-Thanks to [GitHub Actions](.github/workflows/cd_fly-io_app_deployment.yml), this repo enables **fully automated deployment** to [Fly.io](https://fly.io) — no manual steps required.
-
----
-
-## 🌟 Features
-
 - **One-Click Deployment** — Simply push to `main` and GitHub Actions handles the rest.  
 - **Idempotent Pipeline** — Safe to re-run without double-creating volumes.  
 - **Self-Healing** — If a volume is deleted, the next deploy automatically recreates it.  
-- **No Manual CLI Steps** — Everything runs directly inside your GitHub workflow.  
+- **No Manual CLI Steps** — Everything runs directly inside your GitHub workflow.
+- **Database Change Management & CI/CD** — Tracking, managing and applying database schema changes using Liquibase GitHub Action.  
 - **Fast & Minimalistic** — API powered by GoFiber.  
 - **Scalable Design** — Modular folder structure for growth.  
-- **Database Ready** — PostgreSQL integration via GORM.  
+- **Database Ready** — PostgreSQL integration via GORM.
 - **Best Practices** — Built for reproducibility and automation.  
 
 ---
