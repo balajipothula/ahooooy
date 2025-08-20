@@ -8,7 +8,7 @@ curl --location --request GET 'https://go-fiber-app.fly.dev/'
 
 curl \
   --location \
-  --request POST https://go-fiber-app.fly.dev/put/song \
+  --request POST https://go-fiber-app.fly.dev/insert/song \
   --header "Content-Type: application/json" \
   --data '{
     "artist": "Linkin Park",
@@ -18,9 +18,9 @@ curl \
     "released": "2000-10-24T00:00:00Z"
   }'
 
-curl --location --request GET https://go-fiber-app.fly.dev/get/songs
+curl --location --request GET https://go-fiber-app.fly.dev/select/songs
 
-curl --location --request GET https://go-fiber-app.fly.dev/get/song/1
+curl --location --request GET https://go-fiber-app.fly.dev/select/song/1
 
 curl \
   --location \
