@@ -109,13 +109,15 @@ jobs:
           go-version: '1.21.0'
           token: '${{ github.token }}'
           cache-dependency-path: go/go.sum
-      - name: Step - Init Go Modules
+      - name: Step - Init Go Modules 🐹
         working-directory: go
         run: |
           if [ ! -f "go.mod" ]; then
             go mod init github.com/${{ github.repository }}/go
           fi
+          # Add Fiber v2 as a dependency library.
           go get github.com/gofiber/fiber/v2
+          # Install and tidy dependencies.
           go mod tidy
       - name: Append UTC Now to Artifact 🕘
         id: append-utc-now
