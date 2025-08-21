@@ -95,7 +95,7 @@ jobs:
     if: ${{ inputs.build_push_go_artifact }}
     runs-on: ubuntu-22.04
     outputs:
-      main: ${{ steps.append-utc-now.outputs.main }}
+      artifact: ${{ steps.export-artifact-name.outputs.artifact }}
     steps:
       - name: Step - Checkout
         uses: actions/checkout@v3
@@ -109,35 +109,17 @@ jobs:
           go-version: '1.21.0'
           token: '${{ github.token }}'
           cache-dependency-path: go/go.sum
-      - name: Step - Init Go Modules 🐹
+      - name: Step - Build & Compress Go Artifact
         working-directory: go
-        run: |
-          if [ ! -f "go.mod" ]; then
-            go mod init github.com/${{ github.repository }}/go
-          fi
-          # Install and tidy dependencies.
-          go mod tidy
-      - name: Append UTC Now to Artifact 🕘
-        id: append-utc-now
-        run: echo "main=main-$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
-      - name: Step - Build Go Artifact 🧱
-        working-directory: go
-        env:
-          MAIN: ${{ steps.append-utc-now.outputs.main }}
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /tmp/$MAIN main.go
-      - name: Step - Install Ultimate Packer for eXecutables
-        run: sudo apt --yes update && sudo apt --yes install upx
-      - name: Compress Go Artifact with UPX
-        env:
-          MAIN: ${{ steps.append-utc-now.outputs.main }} 
-        run: upx --best --lzma /tmp/$MAIN
+        run: make compress
+      - name: Export Artifact Name
+        id: export-artifact-name
+        run: echo "artifact=$(cat .artifact_name)" >> $GITHUB_OUTPUT
       - name: Step - Upload Go Artifact ᵛ⁴
         uses: ./.github/actions/upload-artifact_v4
-        env:
-          MAIN: ${{ steps.append-utc-now.outputs.main }}
         with:
-          name: ${{ env.MAIN }}
-          path: /tmp/${{ env.MAIN }}
+          name: ${{ steps.export-artifact-name.outputs.artifact }}
+          path: /tmp/${{ steps.export-artifact-name.outputs.artifact }}
           if-no-files-found: 'error'
           retention-days: 1
           compression-level: 0
@@ -149,7 +131,7 @@ jobs:
           version: ${{ env.FLY_VERSION }}
       - name: Step - Push Go Artifact into Fly.io Volume
         env:
-          MAIN: ${{ steps.append-utc-now.outputs.main }}
+          MAIN: ${{ steps.export-artifact-name.outputs.artifact }}
         run: |
           HOSTNAME=$(flyctl status --app="$APP" --json | jq -r '.Hostname')
           curl -s -o /dev/null -w "%{http_code}" "https://$HOSTNAME" || true
@@ -157,7 +139,7 @@ jobs:
           flyctl ssh sftp shell --app="$APP" <<< "put /tmp/$MAIN /gofiber/$MAIN"
       - name: Step - Make Go Artifact Executable
         env:
-          MAIN: ${{ steps.append-utc-now.outputs.main }}
+          MAIN: ${{ steps.export-artifact-name.outputs.artifact }}
         run: flyctl ssh console --app="$APP" --command "chmod +x /gofiber/$MAIN"
   job_fly_app_update:
     name: 🪂 Fly App Update
@@ -185,5 +167,5 @@ jobs:
       - name: Step - Fly.io App Update
         env:
           IMAGE: docker.io/balajipothula/go:1.21
-          MAIN: ${{ needs.job_build_push_go_artifact.outputs.main }}
+          MAIN: ${{ needs.job_build_push_go_artifact.outputs.artifact }}
         run: flyctl machine update $VM_ID --app="$APP" --autostart --autostop='stop' --config='./fly.io/go-fiber-app.toml' --detach --entrypoint="/gofiber/$MAIN" --image="$IMAGE" --port='443:3000/tcp:http:tls' --yes
