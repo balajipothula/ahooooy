@@ -1,12 +1,11 @@
-# Makefile for Go Fiber + GORM Project
+# Makefile for Go Fiber + GORM Project (lives in ./go/)
 
 APP_NAME           := main
-MAIN_FILE          := ./go/main.go
+MAIN_FILE          := main.go
 BUILD_DIR          := /tmp
 ARTIFACT           := $(APP_NAME)-$(shell date -u +%Y%m%d%H%M%S)
 MODULE_NAME        := github.com/$(shell basename $(shell git remote get-url origin))/go
 ARTIFACT_NAME_FILE := .artifact_name_file
-WORKDIR            := go
 
 .PHONY: all init tidy fmt vet lint test build compress
 
@@ -15,32 +14,32 @@ all: init tidy fmt vet lint test build
 
 # Initialize Go module if not already present
 init:
-	@if [ ! -f "$(WORKDIR)/go.mod" ]; then \
-		cd $(WORKDIR) && go mod init $(MODULE_NAME); \
+	@if [ ! -f "go.mod" ]; then \
+		go mod init $(MODULE_NAME); \
 	fi
 
 # Dependency cleanup
 tidy:
-	@cd $(WORKDIR) && go mod tidy
+	@go mod tidy
 
 # Format the code
 fmt:
-	@cd $(WORKDIR) && go fmt ./...
+	@go fmt ./...
 
 # Static analysis
 vet:
-	@cd $(WORKDIR) && go vet ./...
+	@go vet ./...
 
 # Lint with golangci-lint (install if not available)
 lint:
 	@if ! command -v golangci-lint >/dev/null 2>&1; then \
 		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
 	fi
-	@cd $(WORKDIR) && golangci-lint run ./...
+	@golangci-lint run ./...
 
 # Unit tests
 test:
-	@cd $(WORKDIR) && go test ./...
+	@go test ./...
 
 # Build the binary with UTC timestamp artifact
 build: tidy
