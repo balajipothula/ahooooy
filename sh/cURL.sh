@@ -4,11 +4,12 @@
 # Date        : Wednesday, 23 July 2025,
 # Description : cURL commands.
 
-curl --location --request GET 'https://go-fiber-app.fly.dev/'
+curl --location --request GET --url 'https://go-fiber-app.fly.dev/'
 
 curl \
   --location \
-  --request POST https://go-fiber-app.fly.dev/insert/song \
+  --request POST \
+  --url https://go-fiber-app.fly.dev/insert/song \
   --header "Content-Type: application/json" \
   --data '{
     "artist": "Linkin Park",
@@ -18,13 +19,14 @@ curl \
     "released": "2000-10-24T00:00:00Z"
   }'
 
-curl --location --request GET https://go-fiber-app.fly.dev/select/songs
+curl --location --request GET --url https://go-fiber-app.fly.dev/select/songs
 
-curl --location --request GET https://go-fiber-app.fly.dev/select/song/1
+curl --location --request GET --url https://go-fiber-app.fly.dev/select/song/1
 
 curl \
   --location \
-  --request PUT https://go-fiber-app.fly.dev/update/song/1 \
+  --request PUT \
+  --url https://go-fiber-app.fly.dev/update/song/1 \
   --header "Content-Type: application/json" \
   --data '{
     "artist": "Linkin Park",
@@ -34,4 +36,4 @@ curl \
     "released": "2003-03-25T00:00:00Z"
   }'
 
-curl --location --request DELETE https://go-fiber-app.fly.dev/delete/song/1
+curl --location --request DELETE --url https://go-fiber-app.fly.dev/delete/song/1
