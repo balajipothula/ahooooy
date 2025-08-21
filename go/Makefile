@@ -19,7 +19,7 @@ init:
 	fi
 
 # Dependency cleanup
-tidy:
+tidy: init
 	@go mod tidy
 
 # Format the code
