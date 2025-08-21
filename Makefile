@@ -1,11 +1,11 @@
 # Makefile for Go Fiber + GORM Project
 
-APP_NAME      := main
-MAIN_FILE     := ./go/main.go
-BUILD_DIR     := /tmp
-ARTIFACT      := $(APP_NAME)-$(shell date -u +%Y%m%d%H%M%S)
-MODULE_NAME   := github.com/$(shell basename $(shell git remote get-url origin))/go
-ARTIFACT_FILE := .artifact_name
+APP_NAME           := main
+MAIN_FILE          := ./go/main.go
+BUILD_DIR          := /tmp
+ARTIFACT           := $(APP_NAME)-$(shell date -u +%Y%m%d%H%M%S)
+MODULE_NAME        := github.com/$(shell basename $(shell git remote get-url origin))/go
+ARTIFACT_NAME_FILE := .artifact_name_file
 
 .PHONY: all init tidy fmt vet lint test build compress
 
@@ -44,7 +44,7 @@ test:
 # Build the binary with UTC timestamp artifact
 build: tidy
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(ARTIFACT) $(MAIN_FILE)
-  @echo $(ARTIFACT) > $(ARTIFACT_FILE)
+  @echo $(ARTIFACT) > $(ARTIFACT_NAME_FILE)
 
 # Compress binary with UPX (auto-install if missing)
 compress: build

@@ -114,12 +114,12 @@ jobs:
         run: make compress
       - name: Export Artifact Name
         id: export-artifact-name
-        run: echo "artifact=$(cat .artifact_name)" >> $GITHUB_OUTPUT
+        run: echo "artifact=$(cat .artifact_name_file)" >> $GITHUB_OUTPUT
       - name: Step - Upload Go Artifact ᵛ⁴
         uses: ./.github/actions/upload-artifact_v4
         with:
           name: ${{ steps.export-artifact-name.outputs.artifact }}
-          path: /tmp/${{ steps.export-artifact-name.outputs.artifact }}
+          path: /tmp/${{ steps.export-artifact-name.outputs.artifact }}artifact
           if-no-files-found: 'error'
           retention-days: 1
           compression-level: 0
