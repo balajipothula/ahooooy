@@ -110,7 +110,6 @@ jobs:
           token: '${{ github.token }}'
           cache-dependency-path: go/go.sum
       - name: Step - Build & Compress Go Artifact
-        working-directory: go
         run: make compress
       - name: Export Artifact Name
         id: export-artifact-name
