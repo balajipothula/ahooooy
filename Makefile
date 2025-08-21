@@ -44,13 +44,12 @@ test:
 
 # Build the binary with UTC timestamp artifact
 build: tidy
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-	go build -ldflags="-s -w" -o $(BUILD_DIR)/$(ARTIFACT) $(MAIN_FILE)
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(ARTIFACT) $(MAIN_FILE)
 	@echo $(ARTIFACT) > $(ARTIFACT_NAME_FILE)
 
 # Compress binary with UPX (auto-install if missing)
 compress: build
 	@if ! command -v upx >/dev/null 2>&1; then \
-		sudo apt --yes --quiet update && sudo apt --yes install upx \
+		sudo apt --yes --quiet update && sudo apt --yes install upx; \
 	fi
 	@upx --best --lzma $(BUILD_DIR)/$(ARTIFACT)
