@@ -95,7 +95,7 @@ jobs:
     if: ${{ inputs.build_push_go_artifact }}
     runs-on: ubuntu-22.04
     outputs:
-      artifact: ${{ steps.export-artifact-name.outputs.artifact }}
+      artifact: ${{ steps.build_n_compress.outputs.artifact }}
     steps:
       - name: Step - Checkout
         uses: actions/checkout@v3
@@ -110,19 +110,16 @@ jobs:
           token: '${{ github.token }}'
           cache-dependency-path: go/go.sum
       - name: Step - Build & Compress Go Artifact
+        id: build_n_compress
         working-directory: go
         run: make compress
-      - name: Export Artifact Name
-        working-directory: go
-        id: export-artifact-name
-        run: echo "artifact=$(cat .artifact_name_file)" >> $GITHUB_OUTPUT
       - name: Step - Upload Go Artifact ᵛ⁴
         uses: ./.github/actions/upload-artifact_v4
         env:
-          MAIN: ${{ steps.export-artifact-name.outputs.artifact }}
+          ARTIFACT: ${{ steps.build_n_compress.outputs.artifact }}
         with:
-          name: ${{ env.MAIN }}
-          path: /tmp/${{ env.MAIN }}
+          name: ${{ env.ARTIFACT }}
+          path: /tmp/${{ env.ARTIFACT }}
           if-no-files-found: 'error'
           retention-days: 1
           compression-level: 0
@@ -134,16 +131,16 @@ jobs:
           version: ${{ env.FLY_VERSION }}
       - name: Step - Push Go Artifact into Fly.io Volume
         env:
-          MAIN: ${{ steps.export-artifact-name.outputs.artifact }}
+          ARTIFACT: ${{ steps.build_n_compress.outputs.artifact }}
         run: |
           HOSTNAME=$(flyctl status --app="$APP" --json | jq -r '.Hostname')
           curl -s -o /dev/null -w "%{http_code}" "https://$HOSTNAME" || true
           sleep 5
-          flyctl ssh sftp shell --app="$APP" <<< "put /tmp/$MAIN /gofiber/$MAIN"
+          flyctl ssh sftp shell --app="$APP" <<< "put /tmp/$ARTIFACT /gofiber/$ARTIFACT"
       - name: Step - Make Go Artifact Executable
         env:
-          MAIN: ${{ steps.export-artifact-name.outputs.artifact }}
-        run: flyctl ssh console --app="$APP" --command "chmod +x /gofiber/$MAIN"
+          ARTIFACT: ${{ steps.build_n_compress.outputs.artifact }}
+        run: flyctl ssh console --app="$APP" --command "chmod +x /gofiber/$ARTIFACT"
   job_fly_app_update:
     name: 🪂 Fly App Update
     needs: [job_build_push_go_artifact]
@@ -170,5 +167,5 @@ jobs:
       - name: Step - Fly.io App Update
         env:
           IMAGE: docker.io/balajipothula/go:1.21
-          MAIN: ${{ needs.job_build_push_go_artifact.outputs.artifact }}
-        run: flyctl machine update $VM_ID --app="$APP" --autostart --autostop='stop' --config='./fly.io/go-fiber-app.toml' --detach --entrypoint="/gofiber/$MAIN" --image="$IMAGE" --port='443:3000/tcp:http:tls' --yes
+          ARTIFACT: ${{ needs.job_build_push_go_artifact.outputs.artifact }}
+        run: flyctl machine update $VM_ID --app="$APP" --autostart --autostop='stop' --config='./fly.io/go-fiber-app.toml' --detach --entrypoint="/gofiber/$ARTIFACT" --image="$IMAGE" --port='443:3000/tcp:http:tls' --yes
