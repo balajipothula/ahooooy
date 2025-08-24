@@ -45,7 +45,7 @@ jobs:
           changelogFile: "./postgresql/music_db/music_schema/master.xml"
           driver: "org.postgresql.Driver"
           url: "jdbc:postgresql://${{ vars.SUPABASE_PG_HOST }}:${{ vars.SUPABASE_PG_PORT }}/${{ vars.SUPABASE_PG_DB_NAME }}"
-          username: ${{ vars.SUPABASE_PG_DB_NAME }}
+          username: ${{ vars.SUPABASE_PG_USER }}
           password: ${{ secrets.SUPABASE_PG_PASSWORD }}
           defaultSchemaName: "music_schema"
           rollbackOnError: true
