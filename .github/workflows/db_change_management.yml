@@ -15,7 +15,7 @@ description: 'Continuous delivery action using Liquibase Database Change Managem
 on:
   workflow_dispatch:
     inputs:
-      db_change_mgmt:
+      apply_database_changes:
         type: boolean
         default: false
         description: 'Apply Database Change Management'
@@ -24,7 +24,7 @@ on:
 jobs:
   job_db_change_mgmt:
     name: 🛢 Liquibase Update Action ᵛ⁴·³³·⁰
-    if: ${{ inputs.db_change_mgmt }}
+    if: ${{ inputs.apply_database_changes }}
     runs-on: ubuntu-22.04
     environment: ${{ github.ref }}
     defaults:
@@ -40,7 +40,6 @@ jobs:
         uses: ./.github/actions/candidob_get-runner-ip_v1-0-0
       # Deploy any changes in the changelog file that have not been deployed
       - name: Step - Liquibase Update Action 🛢
-        if: ${{ inputs.apply-database-changes }}
         uses: ./.github/actions/liquibase-github-actions_update_v4.33.0
         with:
           changelogFile: "./postgresql/music_db/music_schema/master.xml"
