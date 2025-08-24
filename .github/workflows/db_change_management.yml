@@ -1,5 +1,5 @@
 name: '🛢️ Database Change Management'
-description: 'Continuous delivery action using Liquibase Database Change Management'
+description: 'Liquibase GitHub Action for Database Change Management CI/CD'
 
 # This workflow requires the following configuration in Github
 #
