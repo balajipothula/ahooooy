@@ -1,0 +1,19 @@
+name: '🌐 Get Runner Public IP Address'
+description: 'Gets the public IPv4 and IPv6 addreses of the current runner.'
+
+inputs: {}
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🧩 Get Runner Public IP Address ᵛ¹·⁰·⁰
+      id: step_candidob_get-runner-ip_v1-0-0
+      uses: candidob/get-runner-ip@v1.0.0
+
+outputs:
+  ipv4:
+    value: ${{ steps.step_candidob_get-runner-ip_v1-0-0.outputs.ipv4 }}
+    description: 'The IPv4 Address of the current GitHub Actions runner'
+  ipv6:
+    value: ${{ steps.step_candidob_get-runner-ip_v1-0-0.outputs.ipv6 }}
+    description: 'The IPv6 Address of the current GitHub Actions runner'
