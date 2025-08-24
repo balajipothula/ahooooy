@@ -51,7 +51,7 @@ jobs:
           classpath: "./postgresql/music_db/music_schema"
           rollbackOnError: true
           # Suppress Liquibase console output.
-          logLevel: "OFF"
+          logLevel: "SEVERE"
           mirrorConsoleMessagesToLog: false
           showBanner: false
           showSummary: "off"
