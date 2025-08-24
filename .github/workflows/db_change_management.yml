@@ -1,33 +1,25 @@
-name: '🚀 CD • AWS • Infra Provision'
-description: 'Continuous delivery action to provision AWS infrastructure using Terraform v1.4.0.'
+name: '🛢️ Database Change Management'
+description: 'Continuous delivery action using Liquibase Database Change Management'
 
 # This workflow requires the following configuration in Github
 #
 # Variables:
-#   FLY_VERSION - Specific version of the Fly CLI to avoid unexpected changes.
+#   SUPABASE_PG_HOST     - Supabase Postgres Database Host URL.
+#   SUPABASE_PG_DB_NAME  - Supabase Postgres Database Name.
+#   SUPABASE_PG_USER     - Supabase Postgres Database Username.
+#   SUPABASE_PG_PORT     - Supabase Postgres Database Host Port.
 #
 # Secrets:
-#   FLY_API_TOKEN - Authentication token used to interact with Fly.io's API or CLI
+#   SUPABASE_PG_PASSWORD - Supabase Postgres Database Password.
 
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        type: choice
-        default: 'dev'
-        description: 'Select deployment environment'
-        options: ['dev', 'qa', 'prod']
-        required: true
-      launch-aws-resources:
+      fly_app_update:
         type: boolean
         default: false
-        description: 'Launch AWS resources'
-        required: true
-      apply-database-changes:
-        type: boolean
-        default: false
-        description: 'Apply Database changes'
-        required: true
+        description: 'Apply Database Change Management'
+        required: false
 
 jobs:
   job_db_change_management :

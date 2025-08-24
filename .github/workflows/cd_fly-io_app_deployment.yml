@@ -4,7 +4,7 @@ description: 'Continuous delivery action to provision Fly.io infrastructure and 
 # This workflow requires the following configuration in Github
 #
 # Variables:
-#   FLY_VERSION - Specific version of the Fly CLI to avoid unexpected changes.
+#   FLY_VERSION   - Specific version of the Fly CLI to avoid unexpected changes.
 #
 # Secrets:
 #   FLY_API_TOKEN - Authentication token used to interact with Fly.io's API or CLI
