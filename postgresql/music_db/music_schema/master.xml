@@ -6,6 +6,6 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
   <!-- Wednesday, 23 July 2025 Activity  -->
-  <include file="2025.08.05.ChangeLog.sql" />
+  <include file="2025.08.24.ChangeLog.sql" />
 
 </databaseChangeLog>

@@ -15,15 +15,16 @@ description: 'Continuous delivery action using Liquibase Database Change Managem
 on:
   workflow_dispatch:
     inputs:
-      fly_app_update:
+      db_change_mgmt:
         type: boolean
         default: false
         description: 'Apply Database Change Management'
         required: false
 
 jobs:
-  job_db_change_management :
-    name: 🛢 Liquibase Update Action ᵛ⁴·³³·⁰ 
+  job_db_change_mgmt:
+    name: 🛢 Liquibase Update Action ᵛ⁴·³³·⁰
+    if: ${{ inputs.db_change_mgmt }}
     runs-on: ubuntu-22.04
     environment: ${{ github.ref }}
     defaults:

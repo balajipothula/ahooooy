@@ -1,9 +1,9 @@
 -- liquibase formatted sql
 
--- changeset BalajiPothula:2025-08-05T12:25:10Z
+-- changeset BalajiPothula:2025-08-24T12:53:10Z
 
 -- create Song table.
-CREATE TABLE IF NOT EXISTS music_schema."Song"(
+CREATE TABLE IF NOT EXISTS "music_schema"."Song"(
   "id"         BIGSERIAL PRIMARY KEY,
   "artist"     VARCHAR   NOT NULL,
   "title"      VARCHAR   NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS music_schema."Song"(
 );
 
 -- create Rating table.
-CREATE TABLE IF NOT EXISTS music_schema."Rating"(
+CREATE TABLE IF NOT EXISTS "music_schema"."Rating"(
   "id"   BIGINT   NOT NULL,
   "rate" SMALLINT NOT NULL CHECK(0 < "rate" AND "rate" < 6)
 );
