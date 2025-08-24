@@ -48,10 +48,11 @@ jobs:
           username: ${{ vars.SUPABASE_PG_USER }}
           password: ${{ secrets.SUPABASE_PG_PASSWORD }}
           defaultSchemaName: "music_schema"
-          rollbackOnError: true
-          showSummary: "summary"
-          showSummaryOutput: "console"
           classpath: "./postgresql/music_db/music_schema"
+          rollbackOnError: true
+          # Suppress Liquibase console output.
           logLevel: "OFF"
           mirrorConsoleMessagesToLog: false
           showBanner: false
+          showSummary: "off"
+          showSummaryOutput: "log"
