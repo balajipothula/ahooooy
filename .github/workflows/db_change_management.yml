@@ -54,3 +54,5 @@ jobs:
           classpath: "./postgresql/music_db/music_schema"
           logLevel: "OFF"
           mirrorConsoleMessagesToLog: false
+          showBanner: false
+          showSummary: "off"
