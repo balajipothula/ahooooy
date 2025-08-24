@@ -1,5 +1,5 @@
 name: '🛢️ Database Change Management'
-description: 'Liquibase GitHub Action for Database Change Management CI/CD'
+description: 'Continuous delivery action using Liquibase Database Change Management'
 
 # This workflow requires the following configuration in Github
 #
@@ -38,8 +38,8 @@ jobs:
       - name: Step - Get Runner Public IP Address ᵛ¹·⁰·⁰
         id: step_candidob_get-runner-ip_v1-0-0
         uses: ./.github/actions/candidob_get-runner-ip_v1-0-0
-      # Deploy any changes in the changelog file that have not been deployed.
-      - name: Step - Liquibase Update Action ᵛ⁴·³³·⁰
+      # Deploy any changes in the changelog file that have not been deployed
+      - name: Step - Liquibase Update Action 🛢
         uses: ./.github/actions/liquibase-github-actions_update_v4.33.0
         with:
           changelogFile: "./postgresql/music_db/music_schema/master.xml"
@@ -52,9 +52,3 @@ jobs:
           showSummary: "summary"
           showSummaryOutput: "console"
           classpath: "./postgresql/music_db/music_schema"
-          # Suppress Liquibase console output.
-          logLevel: "OFF"
-          mirrorConsoleMessagesToLog: false
-          showBanner: false
-          showSummary: "off"
-          showSummaryOutput: "log"
