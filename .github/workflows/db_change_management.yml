@@ -1,0 +1,62 @@
+name: '🚀 CD • AWS • Infra Provision'
+description: 'Continuous delivery action to provision AWS infrastructure using Terraform v1.4.0.'
+
+# This workflow requires the following configuration in Github
+#
+# Variables:
+#   FLY_VERSION - Specific version of the Fly CLI to avoid unexpected changes.
+#
+# Secrets:
+#   FLY_API_TOKEN - Authentication token used to interact with Fly.io's API or CLI
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        default: 'dev'
+        description: 'Select deployment environment'
+        options: ['dev', 'qa', 'prod']
+        required: true
+      launch-aws-resources:
+        type: boolean
+        default: false
+        description: 'Launch AWS resources'
+        required: true
+      apply-database-changes:
+        type: boolean
+        default: false
+        description: 'Apply Database changes'
+        required: true
+
+jobs:
+  job_db_change_management :
+    name: 🛢 Liquibase Update Action ᵛ⁴·³³·⁰ 
+    runs-on: ubuntu-22.04
+    environment: ${{ github.ref }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Checkout a Git repository at a particular version.
+      - name: Step - Checkout ᵛ³
+        uses: actions/checkout@v3
+      # Gets the public IPv4 and IPv6 addreses of the current runner.
+      - name: Step - Get Runner Public IP Address ᵛ¹·⁰·⁰
+        id: step_candidob_get-runner-ip_v1-0-0
+        uses: ./.github/actions/candidob_get-runner-ip_v1-0-0
+      # Deploy any changes in the changelog file that have not been deployed
+      - name: Step - Liquibase Update Action 🛢
+        if: ${{ inputs.apply-database-changes }}
+        uses: ./.github/actions/liquibase-github-actions_update_v4.33.0
+        with:
+          changelogFile: "./postgresql/music_db/music_schema/master.xml"
+          driver: "org.postgresql.Driver"
+          url: "jdbc:postgresql://${{ vars.SUPABASE_PG_HOST }}:${{ vars.SUPABASE_PG_PORT }}/${{ vars.SUPABASE_PG_DB_NAME }}"
+          username: ${{ vars.SUPABASE_PG_DB_NAME }}
+          password: ${{ secrets.SUPABASE_PG_PASSWORD }}
+          defaultSchemaName: "music_schema"
+          rollbackOnError: true
+          showSummary: "summary"
+          showSummaryOutput: "console"
+          classpath: "./postgresql/music_db/music_schema"
