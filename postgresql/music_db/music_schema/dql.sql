@@ -7,7 +7,7 @@ SELECT
   "level",
   "released"
 FROM
-  webapp_db.public."Song";
+  music_schema."Song";
 
 -- select particular song record from the Song table.
 SELECT
@@ -18,14 +18,14 @@ SELECT
   "level",
   "released"
 FROM
-  webapp_db.public."Song"
+  music_schema."Song"
 WHERE
   "songId" = 1;
 
 -- select songs in a pagination way from the Song table.
 SELECT
   *
-FROM webapp_db.public."Song"
+FROM music_schema."Song"
 ORDER BY
   "songId" ASC
 LIMIT  2
@@ -35,7 +35,7 @@ OFFSET 0;
 SELECT
   *
 FROM
-  webapp_db.public."Song"
+  music_schema."Song"
 WHERE
      artist ~* 'the Y'
   OR title  ~* 'pic M';
@@ -45,13 +45,13 @@ SELECT
   "id",
   "rate"
 FROM
-  webapp_db.public."Rating";
+  music_schema."Rating";
 
 -- select particular song rating records from the Rating table.
 SELECT
   "rate"
 FROM
-  webapp_db.public."Rating"
+  music_schema."Rating"
 WHERE
   "id" = 4;
 
@@ -61,7 +61,7 @@ SELECT
   MIN("rate")                AS "minRating",
   MAX("rate")                AS "maxRating"
 FROM
-  webapp_db.public."Rating"
+  music_schema."Rating"
 WHERE
   "id" = 9;
 
@@ -69,12 +69,12 @@ WHERE
 SELECT
   AVG("difficulty")::numeric(10,2) AS "avgDifficulty"
 FROM
-  webapp_db.public."Song";
+  music_schema."Song";
 
 -- select average difficulty of all songs belongs to particular level from Song table.
 SELECT
   AVG("difficulty")::numeric(10,2) AS "avgDifficulty"
 FROM
-  webapp_db.public."Song"
+  music_schema."Song"
 WHERE
   "level" = 9;

@@ -1,6 +1,6 @@
 -- create Song table.
-CREATE TABLE IF NOT EXISTS webapp_db.public."Song"(
-  "songId"     BIGSERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS music_schema."Song"(
+  "id"     BIGSERIAL PRIMARY KEY,
   "artist"     VARCHAR   NOT NULL,
   "title"      VARCHAR   NOT NULL,
   "difficulty" FLOAT(2)  NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS webapp_db.public."Song"(
 );
 
 -- create Rating table.
-CREATE TABLE IF NOT EXISTS webapp_db.public."Rating"(
+CREATE TABLE IF NOT EXISTS music_schema."Rating"(
   "id" BIGINT   NOT NULL,
   "rate" SMALLINT NOT NULL CHECK(0 < "rate" AND "rate" < 6)
 );

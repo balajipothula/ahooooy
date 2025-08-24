@@ -1,5 +1,5 @@
 -- insert record into the Song table.
-INSERT INTO webapp_db.public."Song"(
+INSERT INTO music_schema."Song"(
   "artist",
   "title",
   "difficulty",
@@ -15,7 +15,7 @@ VALUES(
 );
 
 -- insert record into the Rating table.
-INSERT INTO webapp_db.public."Rating"(
+INSERT INTO music_schema."Rating"(
   "id",
   "rate"
 )
@@ -26,7 +26,7 @@ VALUES(
 
 -- bulk insertion into the Song table.
 -- insert records into the Song table.
-INSERT INTO webapp_db.public."Song"("artist", "title", "difficulty", "level", "released")
+INSERT INTO music_schema."Song"("artist", "title", "difficulty", "level", "released")
 VALUES
   ('The Yousicians', 'Lycanthropic Metamorphosis',  '14.6',  '13', '2016-10-26'),
   ('The Yousicians', 'A New Kennel',                '9.1',   '9',  '2010-02-03'),
@@ -42,7 +42,7 @@ VALUES
   ('The Yousicians', 'Babysitting',                 '7',     '6',  '2016-07-01');
 
 -- insert record into the Rating table.
-INSERT INTO webapp_db.public."Rating"("id", "rate")
+INSERT INTO music_schema."Rating"("id", "rate")
 VALUES
   ( 1, 2),
   ( 2, 1),
