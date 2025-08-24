@@ -2,7 +2,7 @@ FROM scratch AS scratch0
 
 LABEL \
   # Authors or maintainers of the image.
-  org.opencontainers.image.authors="Balaji Pothula <balan.pothula@gmail.com>" \
+  org.opencontainers.image.authors="Balaji Pothula - balan.pothula@gmail.com" \
   # Image reference of the image.
   org.opencontainers.image.base.name="scratch" \
   # Title or name for the image.
@@ -12,7 +12,7 @@ LABEL \
   # Description or summary of the image.
   org.opencontainers.image.description="GO 1.21.0 - Programming language" \
   # Name of the distributing entity, organization or individual.
-  org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. <https://blitzsystems.in>"
+  org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. - https://blitzsystems.in"
 
 # Set working directory
 WORKDIR /gofiber

@@ -2,7 +2,7 @@ FROM alpine:3.22.1 AS mini_httpd1.30-r5
 
 LABEL \
   # Authors or maintainers of the image.
-  org.opencontainers.image.authors="Balaji Pothula <balan.pothula@gmail.com>" \
+  org.opencontainers.image.authors="Balaji Pothula - balan.pothula@gmail.com>" \
   # Image reference of the image.
   org.opencontainers.image.base.name="alpine:3.22.1" \
   # Title or name for the image.
@@ -12,7 +12,7 @@ LABEL \
   # Description or summary of the image.
   org.opencontainers.image.description="mini_httpd - Small forking webserver with ssl and ipv6 support" \
   # Name of the distributing entity, organization or individual.
-  org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. <https://blitzsystems.in>"
+  org.opencontainers.image.vendor="Blitz Systems Pvt. Ltd. - https://blitzsystems.in"
 
 # Install mini_httpd server
 RUN apk add --no-cache mini_httpd
