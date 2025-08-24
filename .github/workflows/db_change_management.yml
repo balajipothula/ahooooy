@@ -55,4 +55,3 @@ jobs:
           logLevel: "OFF"
           mirrorConsoleMessagesToLog: false
           showBanner: false
-          showSummary: "off"
