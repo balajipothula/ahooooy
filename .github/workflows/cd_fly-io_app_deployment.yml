@@ -173,18 +173,19 @@ jobs:
           SUPABASE_PG_DB_NAME: ${{ vars.SUPABASE_PG_DB_NAME }}
           SUPABASE_PG_USER: ${{ vars.SUPABASE_PG_USER }}
           SUPABASE_PG_PASSWORD: ${{ secrets.SUPABASE_PG_PASSWORD }}
-        run: flyctl machine update $VM_ID \
-               --app="$APP" \
-               --autostart \
-               --autostop='stop' \
-               --config='./fly.io/go-fiber-app.toml' \
-               --detach \
-               --entrypoint="/gofiber/$ARTIFACT" \
-               --env SUPABASE_PG_HOST="$SUPABASE_PG_HOST" \
-               --env SUPABASE_PG_PORT="$SUPABASE_PG_PORT" \
-               --env SUPABASE_PG_DB_NAME="$SUPABASE_PG_DB_NAME" \
-               --env SUPABASE_PG_USER="$SUPABASE_PG_USER" \
-               --env SUPABASE_PG_PASSWORD="$SUPABASE_PG_PASSWORD" \
-               --image="$IMAGE" \
-               --port='443:3000/tcp:http:tls' \
-               --yes
+        run: |
+          flyctl machine update $VM_ID \
+            --app="$APP" \
+            --autostart \
+            --autostop='stop' \
+            --config='./fly.io/go-fiber-app.toml' \
+            --detach \
+            --entrypoint="/gofiber/$ARTIFACT" \
+            --env SUPABASE_PG_HOST="$SUPABASE_PG_HOST" \
+            --env SUPABASE_PG_PORT="$SUPABASE_PG_PORT" \
+            --env SUPABASE_PG_DB_NAME="$SUPABASE_PG_DB_NAME" \
+            --env SUPABASE_PG_USER="$SUPABASE_PG_USER" \
+            --env SUPABASE_PG_PASSWORD="$SUPABASE_PG_PASSWORD" \
+            --image="$IMAGE" \
+            --port='443:3000/tcp:http:tls' \
+            --yes
