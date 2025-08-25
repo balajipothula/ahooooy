@@ -32,6 +32,11 @@ on:
         description: 'Docker Build & Push ᵛ⁶'
         required: true
 
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
 jobs:
   job_get_utc-time-now:
     name: 🕒 Get UTC Time Now
