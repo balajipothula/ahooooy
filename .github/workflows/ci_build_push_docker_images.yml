@@ -3,9 +3,12 @@ description: 'Continuous integration action to build and push Docker images to s
 
 # This workflow requires the following configuration in Github
 #
+# Variables:
+#   DOCKERHUB_USERNAME - Username to log against the Docker registry.
+#
 # Secrets:
-#   DOCKERHUB_TOKEN - Password or PAT (Personal Access Token) used to log against the Docker registry.
-#   GHCR_PAT        - Password or PAT (Personal Access Token) used to log against the GitHub Container Registry.
+#   DOCKERHUB_TOKEN    - Password or PAT (Personal Access Token) used to log against the Docker registry.
+#   GHCR_PAT           - Password or PAT (Personal Access Token) used to log against the GitHub Container Registry.
 
 on:
   workflow_dispatch:
