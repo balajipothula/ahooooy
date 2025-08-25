@@ -1,15 +1,15 @@
 name: '🤖 CI • Build • Push • Docker Images'
 description: 'Continuous integration action to build and push Docker images to selected registries.'  
 
+# This workflow requires the following configuration in Github
+#
+# Secrets:
+#   DOCKERHUB_TOKEN - Password or PAT (Personal Access Token) used to log against the Docker registry.
+#   GHCR_PAT        - Password or PAT (Personal Access Token) used to log against the GitHub Container Registry.
+
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        type: choice
-        default: 'dev'
-        description: 'Select deployment environment'
-        options: ['dev', 'qa', 'prod']
-        required: true
       dockerfile:
         type: string
         default: 'Dockerfile'
@@ -23,13 +23,13 @@ on:
         required: true
       namespace_repository_tag:
         type: string
-        default: 'balajipothula/nginx:1.28.0'
+        default: 'balajipothula/scratch:0'
         description: 'Enter "Namespace/Repository:Tag"'
         required: true
       docker_build-push-action_v6:
         type: boolean
         default: false
-        description: '🐳 Docker Build & Push ᵛ⁶'
+        description: 'Docker Build & Push ᵛ⁶'
         required: true
 
 jobs:
