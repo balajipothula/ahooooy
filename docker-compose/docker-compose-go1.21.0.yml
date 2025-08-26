@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  gofiber:
+    image: 'alpine:3.22.1'
+    labels:
+      org.opencontainers.image.authors: Balaji Pothula <balan.pothula@gmail.com>
+      org.opencontainers.image.base.name: 'alpine:3.22.1'
+      org.opencontainers.image.title: 'go:1.21.0'
+      org.opencontainers.image.version: 1.21.0
+      org.opencontainers.image.description: GO 1.21.0 - Programming language
+      org.opencontainers.image.vendor: 'Blitz Systems Pvt. Ltd. <https://blitzsystems.in>'
+    working_dir: /gofiber
+    volumes:
+      - './gofiber:/gofiber'
+    ports:
+      - '3000:3000'
+    entrypoint:
+      - /gofiber/main
+    container_name: go_fiber_app

@@ -2,6 +2,7 @@
 
 ✨ A dynamic, feathery [GoFiber](https://gofiber.io/) web application, ready to **fly** with just one click! this repo enables **fully automated deployment**  — no manual steps required.  
 🙏 **Thanks to 🪂 [Fly.io](https://fly.io) for supporting developers with a free Hobby Plan — including 3 machines (shared-cpu-1x, 256MB each).**  
+🙏 **Thanks to ⚡ [Supabase](https://supabase.com) for supporting developers with a free Passion Projects Plan — including Unlimited API requests, 500 MB database size, 5 GB egress, 1 GB file storage).**  
 
 ---
 
