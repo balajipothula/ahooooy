@@ -2,7 +2,7 @@
 
 # Author      : Balaji Pothula <balan.pothula@gmail.com>,
 # Date        : Tuesday, 26 August 2025,
-# Description : Docker commands.
+# Description : docker commands.
 
 # Log in to a registry
 #

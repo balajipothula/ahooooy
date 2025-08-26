@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   gofiber:
     image: 'alpine:3.22.1'
@@ -12,7 +10,7 @@ services:
       org.opencontainers.image.vendor: 'Blitz Systems Pvt. Ltd. - https://blitzsystems.in'
     working_dir: /gofiber
     volumes:
-      - './gofiber:/gofiber'
+      - "${HOME}/gofiber:/gofiber"
     ports:
       - '3000:3000'
     entrypoint:
