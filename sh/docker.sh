@@ -36,3 +36,9 @@ docker container run \
   --restart=unless-stopped \
   --volume=$HOME/gofiber:/gofiber \
   balajipothula/go:1.21.0
+
+# Execute a command in a running container
+#
+# --interactive : Keep STDIN open even if not attached
+# --tty         : Allocate a pseudo-TTY
+docker container exec --interactive --tty go_fiber_app ash
