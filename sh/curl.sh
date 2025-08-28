@@ -2,7 +2,7 @@
 
 # Author      : Balaji Pothula <balan.pothula@gmail.com>,
 # Date        : Wednesday, 23 July 2025,
-# Description : cURL commands.
+# Description : curl commands.
 
 # get index page
 curl --location --request GET --url 'https://go-fiber-app.fly.dev'
