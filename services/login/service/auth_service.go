@@ -1,70 +1,99 @@
 package service
 
 import (
-    "dating-app/services/login/model"
-    "dating-app/services/login/mysql"
-    "dating-app/services/login/redis"
-    "errors"
-    "time"
+	"context"
+	"errors"
+	"time"
 
-    "golang.org/x/crypto/bcrypt"
+	"dating-app/services/login/model"
+	"dating-app/services/login/redisrepo"
 
-    "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte("super-secret-key")
-
 type AuthService struct {
-    Users    *mysql.UserRepository
-    Sessions *redis.SessionRepository
+	users   *redisrepo.UserRepository
+	jwtKey  []byte
+	timeout time.Duration
 }
 
-func (s *AuthService) Register(email, password string) (*model.User, error) {
-    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    if err != nil {
-        return nil, err
-    }
-
-    user := &model.User{
-        Email:        email,
-        PasswordHash: string(hash),
-        Provider:     "local",
-    }
-
-    if err := s.Users.Create(user); err != nil {
-        return nil, err
-    }
-    return user, nil
+func NewAuthService(users *redisrepo.UserRepository, jwtKey string) *AuthService {
+	return &AuthService{
+		users:   users,
+		jwtKey:  []byte(jwtKey),
+		timeout: time.Hour * 24, // token validity
+	}
 }
 
-func (s *AuthService) Login(email, password string) (string, error) {
-    user, err := s.Users.FindByEmail(email)
-    if err != nil {
-        return "", errors.New("invalid credentials")
-    }
+// Register a new user
+func (s *AuthService) Register(ctx context.Context, email, password string) error {
+	// check if user already exists
+	existing, _ := s.users.GetUserByEmail(ctx, email)
+	if existing != nil {
+		return errors.New("user already exists")
+	}
 
-    if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-        return "", errors.New("invalid credentials")
-    }
+	// hash password
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
 
-    claims := jwt.MapClaims{
-        "sub": user.ID,
-        "exp": time.Now().Add(15 * time.Minute).Unix(),
-    }
+	// create user model
+	user := &model.User{
+		ID:           time.Now().UnixNano(), // crude unique ID
+		Email:        email,
+		PasswordHash: string(hash),
+		Provider:     "local",
+		CreatedAt:    time.Now(),
+	}
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    signed, err := token.SignedString(jwtSecret)
-    if err != nil {
-        return "", err
-    }
-
-    if err := s.Sessions.StoreToken(signed, user.ID, 15*time.Minute); err != nil {
-        return "", err
-    }
-
-    return signed, nil
+	// save in Redis
+	return s.users.SaveUser(ctx, user)
 }
 
-func (s *AuthService) Logout(token string) error {
-    return s.Sessions.RevokeToken(token)
+// Login validates credentials and returns JWT
+func (s *AuthService) Login(ctx context.Context, email, password string) (string, error) {
+	user, err := s.users.GetUserByEmail(ctx, email)
+	if err != nil {
+		return "", err
+	}
+	if user == nil {
+		return "", errors.New("invalid credentials")
+	}
+
+	// compare password hash
+	if user.Provider == "local" {
+		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+			return "", errors.New("invalid credentials")
+		}
+	}
+
+	// generate JWT
+	claims := jwt.MapClaims{
+		"user_id": user.ID,
+		"email":   user.Email,
+		"exp":     time.Now().Add(s.timeout).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString(s.jwtKey)
 }
+
+// VerifyToken parses and validates JWT
+func (s *AuthService) VerifyToken(tokenString string) (*jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return s.jwtKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return &claims, nil
+	}
+
+	return nil, errors.New("invalid token")
+}
+
