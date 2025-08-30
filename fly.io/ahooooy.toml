@@ -1,12 +1,12 @@
-app             = "go-fiber-app"
-primary_region  = "fra"
+app             = "ahooooy"
+primary_region  = "bom"
 kill_signal     = "SIGINT"
 kill_timeout    = 5
 swap_size_mb    = 256
 
 [[mounts]]
-  volume = "go_fiber_vol"
-  path   = "/gofiber"
+  volume = "ahooooy_vol"
+  path   = "/ahooooy"
 
 [[vm]]
   size = "shared-cpu-1x"
@@ -25,7 +25,7 @@ swap_size_mb    = 256
     protocol = "tcp"
 
 [env]
-  APP = "go-fiber-app"
+  APP = "ahooooy"
 
 [[restart]]
   policy = "always"

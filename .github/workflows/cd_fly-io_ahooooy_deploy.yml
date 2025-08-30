@@ -1,4 +1,4 @@
-name: '🚀 CD • Fly.io • App Deployment'
+name: '🚀 CD • Fly.io • Deploy Ahooooy'
 description: 'Continuous delivery action to provision Fly.io infrastructure and app deployment using flyctl'
 
 # This workflow requires the following configuration in Github
@@ -14,7 +14,7 @@ on:
     inputs:
       fly_app_name:
         type: string
-        default: go-fiber-app
+        default: ahooooy
         description: 'Unique Fly.io App name'
         required: true
       fly_app_create:
@@ -41,7 +41,7 @@ env:
   FLY_VERSION: ${{ vars.FLY_VERSION  || '0.3.167' }}
   APP: ${{ inputs.fly_app_name }}
   ORG: ${{ vars.FLY_ORG || 'personal' }}
-  REGION: ${{ vars.FLY_REGION || 'fra' }}
+  REGION: ${{ vars.FLY_REGION || 'bom' }}
 
 jobs:
   job_fly_app_create:
