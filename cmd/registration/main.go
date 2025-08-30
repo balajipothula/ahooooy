@@ -1,4 +1,3 @@
-// cmd/registration/main.go
 package main
 
 import (
@@ -7,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"ahooooy/service/registration/internal/redis"
+	"ahooooy/service/registration"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -15,20 +14,20 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// 1. Connect to Redis (adjust address if needed)
+	// 1. Connect to Redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // default Redis
-		Password: "",               // no password set
-		DB:       9,                // use default DB
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       9,
 	})
 
-	// 2. Wrap with our RedisOTPStore
-	otpStore := redis.NewRedisOTPStore(rdb)
+	// 2. Use exposed wrapper
+	otpStore := registration.NewRedisOTPStore(rdb)
 
 	// 3. Create a demo OTP
-	otp := redis.OTP{
+	otp := registration.OTP{
 		Email:     "user@example.com",
-		Code:      "123456", // string (preserves leading zeros)
+		Code:      "123456",
 		ExpiresAt: time.Now().Add(30 * time.Minute),
 	}
 
