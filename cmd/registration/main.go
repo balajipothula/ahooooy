@@ -19,7 +19,7 @@ func main() {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379", // default Redis
 		Password: "",               // no password set
-		DB:       0,                // use default DB
+		DB:       9,                // use default DB
 	})
 
 	// 2. Wrap with our RedisOTPStore
