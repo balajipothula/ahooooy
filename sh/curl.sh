@@ -5,13 +5,13 @@
 # Description : curl commands.
 
 # get index page
-curl --location --request GET --url 'https://go-fiber-app.fly.dev'
+curl --location --request GET --url 'https://ahooooy.fly.dev'
 
 # insert new song
 curl \
   --location \
   --request POST \
-  --url 'https://go-fiber-app.fly.dev/insert/song' \
+  --url 'https://ahooooy.fly.dev/insert/song' \
   --header 'Content-Type: application/json' \
   --data '{
     "artist": "Linkin Park",
@@ -22,16 +22,16 @@ curl \
   }'
 
 # select all songs
-curl --location --request GET --url 'https://go-fiber-app.fly.dev/select/songs'
+curl --location --request GET --url 'https://ahooooy.fly.dev/select/songs'
 
 # select song by id
-curl --location --request GET --url 'https://go-fiber-app.fly.dev/select/song/1'
+curl --location --request GET --url 'https://ahooooy.fly.dev/select/song/1'
 
 # update song by id
 curl \
   --location \
   --request PUT \
-  --url 'https://go-fiber-app.fly.dev/update/song/1' \
+  --url 'https://ahooooy.fly.dev/update/song/1' \
   --header 'Content-Type: application/json' \
   --data '{
     "artist": "Linkin Park",
@@ -42,4 +42,4 @@ curl \
   }'
 
 # delete song by id
-curl --location --request DELETE --url 'https://go-fiber-app.fly.dev/delete/song/1'
+curl --location --request DELETE --url 'https://ahooooy.fly.dev/delete/song/1'
