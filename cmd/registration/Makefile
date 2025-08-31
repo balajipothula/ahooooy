@@ -1,38 +1,30 @@
 # ======================================================
-# Root Makefile for ahooooy project
-# - CI/CD entrypoint
-# - Multi-binary builds for all cmd/* services
+# Makefile for registration service (developer use only)
 # ======================================================
 
-# Go configuration
 GO       := go
-BIN_DIR  := bin
-CMDS     := $(notdir $(wildcard ./cmd/*))
+ROOT_DIR := $(abspath ../..)
+BIN_DIR  := $(ROOT_DIR)/bin
+SERVICE  := registration
 
-.PHONY: all tidy test build clean $(CMDS)
+.PHONY: tidy build run
 
-# Default: build all services
-all: tidy test build
-
-# Tidy dependencies
+# Tidy dependencies (always run from root)
 tidy:
 	@echo ">>> Running go mod tidy"
-	$(GO) mod tidy
+	cd $(ROOT_DIR) && $(GO) mod tidy
 
-# Run tests
-test:
-	@echo ">>> Running go test"
-	$(GO) test ./... -v
+# Build only the registration service
+build:
+	@echo ">>> Building $(SERVICE)"
+	$(GO) build -o $(BIN_DIR)/$(SERVICE) .
 
-# Build all services
-build: $(CMDS)
+# Run the registration service directly
+run:
+	@echo ">>> Running $(SERVICE)"
+	$(GO) run .
 
-# Per-service build (e.g. make registration)
-$(CMDS):
-	@echo ">>> Building service: $@"
-	$(GO) build -o $(BIN_DIR)/$@ ./cmd/$@
-
-# Clean up
+# Clean the built binary
 clean:
-	@echo ">>> Cleaning binaries"
-	rm -rf $(BIN_DIR)/*
+	@echo ">>> Cleaning $(SERVICE) binary"
+	rm -f $(BIN_DIR)/$(SERVICE)

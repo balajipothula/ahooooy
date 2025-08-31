@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"ahooooy/service/registration"
@@ -14,11 +16,19 @@ import (
 func main() {
 	ctx := context.Background()
 
+	DB_STR := os.Getenv("DB")
+	DB_INT, err := strconv.Atoi(DB_STR)
+
+	if err != nil {
+		panic("Invalid DB index value: must be an integer")
+	}
+
 	// 1. Connect to Redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       9,
+		Addr:     os.Getenv("ADDR"),
+		Username: os.Getenv("USERNAME"),
+		Password: os.Getenv("PASSWORD"),
+		DB:       DB_INT,
 	})
 
 	// 2. Use exposed wrapper
