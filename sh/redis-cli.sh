@@ -18,6 +18,9 @@ redis-cli \
   -n 0 \
   --no-raw
 
+#
+GET "otp:user@example.com"
+
 # 
 HGET Email:user@example.com Code
 
