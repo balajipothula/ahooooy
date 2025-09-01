@@ -20,17 +20,20 @@ func generateOTP() string {
 
 // sendEmail sends an email with the OTP
 func sendEmail(to string, otp string) error {
+	gmailUser := os.Getenv("GMAIL_USERNAME")
+	gmailPass := os.Getenv("GMAIL_APP_PASSWORD")
 
-	GMAIL_USERNAME := os.Getenv("GMAIL_USERNAME")
-	GMAIL_APP_PASSWORD := os.Getenv("GMAIL_APP_PASSWORD")
+	if gmailUser == "" || gmailPass == "" {
+		return fmt.Errorf("missing Gmail credentials: check GMAIL_USERNAME and GMAIL_APP_PASSWORD env vars")
+	}
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", GMAIL_USERNAME) // change
+	m.SetHeader("From", gmailUser)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Your Ahooooy OTP Code")
 	m.SetBody("text/plain", fmt.Sprintf("Your OTP code is: %s", otp))
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, GMAIL_USERNAME, GMAIL_APP_PASSWORD) // change
+	d := gomail.NewDialer("smtp.gmail.com", 587, gmailUser, gmailPass)
 
 	return d.DialAndSend(m)
 }
