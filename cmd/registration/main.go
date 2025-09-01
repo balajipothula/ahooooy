@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"ahooooy/service/registration/internal/model"
+	"ahooooy/service/registration/model"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -38,5 +38,5 @@ func main() {
 		return c.JSON(member) // return member as JSON for now
 	})
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(":3000"))
 }
