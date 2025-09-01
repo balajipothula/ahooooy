@@ -1,55 +1,42 @@
 package main
 
 import (
-	"context"
 	"log"
-	"os"
-	"strconv"
 	"time"
 
-	"ahooooy/service/registration"
+	"ahooooy/service/registration/internal/model"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-// initRedis initializes and returns a Redis client using env vars.
-func initRedis() *redis.Client {
-	redisDBStr := os.Getenv("REDIS_DB")
-	redisDBInt, err := strconv.Atoi(redisDBStr)
-	if err != nil {
-		log.Fatalf("❌ Invalid REDIS_DB value %q: must be an integer", redisDBStr)
-	}
-
-	return redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST"),
-		Username: os.Getenv("REDIS_USERNAME"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       redisDBInt,
-	})
-}
-
 func main() {
-	ctx := context.Background()
+	app := fiber.New()
+	app.Use(logger.New())
 
-	// 1. Setup Redis
-	rdb := initRedis()
-	otpStore := registration.NewRedisOTPStore(rdb)
+	// Serve static form
+	app.Static("/", "./public")
 
-	// 2. Example usage (demo flow)
-	otp := registration.OTP{
-		Email:     "user@example.com",
-		Code:      "123456",
-		ExpiresAt: time.Now().Add(30 * time.Minute),
-	}
+	// Handle registration
+	app.Post("/register", func(c *fiber.Ctx) error {
+		email := c.FormValue("email")
 
-	if err := otpStore.Set(ctx, otp, 30*time.Minute); err != nil {
-		log.Fatalf("❌ failed to set OTP: %v", err)
-	}
-	log.Println("✅ OTP stored in Redis")
+		// Simulate virtual number generator (e.g., internal/virtual/virtual_number.go)
+		virtualNumber := "1234567890" // TODO: replace with generator
 
-	stored, err := otpStore.Get(ctx, otp.Email)
-	if err != nil {
-		log.Fatalf("❌ failed to get OTP: %v", err)
-	}
-	log.Printf("📩 Retrieved OTP for %s: %+v\n", otp.Email, stored)
+		// Create new member (not persisted yet, just demo)
+		member := model.Member{
+			VirtualNumber: virtualNumber,
+			Email:         email,
+			Verified:      false,
+			CreatedAt:     time.Now().UTC(),
+			UpdatedAt:     time.Now().UTC(),
+		}
+
+		log.Printf("🆕 New member registered: %+v\n", member)
+
+		return c.JSON(member) // return member as JSON for now
+	})
+
+	log.Fatal(app.Listen(":8080"))
 }
