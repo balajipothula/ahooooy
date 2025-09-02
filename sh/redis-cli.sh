@@ -19,13 +19,13 @@ redis-cli \
   --no-raw
 
 #
-GET "otp:user@example.com"
+GET "otp:balan.pothula@gmail.com"
 
 # 
-HGET Email:user@example.com Code
+HGET Email:balan.pothula@gmail.com Code
 
 # 
-HGET Email:user@example.com Code ExpiresAt
+HGET Email:balan.pothula@gmail.com Code ExpiresAt
 
 # 
-HGETALL Email:user@example.com
+HGETALL Email:balan.pothula@gmail.com
