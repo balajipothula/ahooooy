@@ -1,19 +1,36 @@
 -- liquibase formatted sql
 
--- changeset BalajiPothula:2025-08-24T12:53:10Z
-
--- create Song table.
-CREATE TABLE IF NOT EXISTS "music_schema"."Song"(
-  "id"         BIGSERIAL PRIMARY KEY,
-  "artist"     VARCHAR   NOT NULL,
-  "title"      VARCHAR   NOT NULL,
-  "difficulty" FLOAT(2)  NOT NULL,
-  "level"      SMALLINT  NOT NULL CHECK(0 < "level"  AND "level" < 100),
-  "released"   VARCHAR   NOT NULL
+-- changeset BalajiPothula:2025-09-04T13:16:01Z
+CREATE TABLE member (
+  virtual_number VARCHAR(20) PRIMARY KEY,
+  email          VARCHAR(255) UNIQUE NOT NULL,
+  verified       BOOLEAN DEFAULT FALSE,
+  first_name     VARCHAR(100),
+  family_name    VARCHAR(100),
+  dob            DATE,
+  gender         VARCHAR(10),
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+--rollback DROP TABLE member;
 
--- create Rating table.
-CREATE TABLE IF NOT EXISTS "music_schema"."Rating"(
-  "id"   BIGINT   NOT NULL,
-  "rate" SMALLINT NOT NULL CHECK(0 < "rate" AND "rate" < 6)
-);
+-- changeset BalajiPothula:2025-09-04T13:16:02Z
+CREATE INDEX idx_member_email ON member(email);
+--rollback DROP INDEX idx_member_email;
+
+-- changeset BalajiPothula:2025-09-04T13:16:03Z
+CREATE OR REPLACE FUNCTION func_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+--rollback DROP FUNCTION set_updated_at();
+
+-- changeset BalajiPothula:2025-09-04T13:16:04Z
+CREATE TRIGGER trigger_func_updated_at
+BEFORE UPDATE ON member
+FOR EACH ROW
+EXECUTE FUNCTION func_updated_at();
+--rollback DROP TRIGGER trigger_func_updated_at ON member;

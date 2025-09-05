@@ -2,7 +2,6 @@ package model
 
 import "time"
 
-// Member represents a registered user in ahooooy.com
 // Member represents a registered user stored in PostgreSQL
 type Member struct {
 	// 10-digit phone-like identity
@@ -11,8 +10,14 @@ type Member struct {
 	Email string `gorm:"column:email;uniqueIndex;not null" json:"email"`
 	// true after OTP check
 	Verified bool `gorm:"column:verified;default:false" json:"verified"`
-	// UTC timestamp
-	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	// UTC timestamp
-	UpdatedAt time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+
+	// Profile fields
+	FirstName  string    `gorm:"column:first_name" json:"first_name"`
+	FamilyName string    `gorm:"column:family_name" json:"family_name"`
+	Dob        time.Time `gorm:"column:dob" json:"dob"`
+	Gender     string    `gorm:"column:gender" json:"gender"`
+
+	// UTC timestamps – set dynamically in Go
+	CreatedAt time.Time `gorm:"column:created_at;not null" json:"created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at;not null" json:"updated_at"`
 }

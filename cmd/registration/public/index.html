@@ -2,13 +2,81 @@
 <html>
   <head>
     <title>Ahooooy Registration</title>
+    <script>
+      async function registerUser(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const btn = document.getElementById("registerBtn");
+        const status = document.getElementById("statusMsg");
+
+        btn.disabled = true;
+        btn.innerText = "Sending OTP...";
+        status.innerText = "⏳ Please wait, sending OTP...";
+
+        try {
+          const resp = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "email=" + encodeURIComponent(email),
+          });
+
+          if (resp.ok) {
+            document.getElementById("otpBox").style.display = "block";
+            status.innerText = "✅ OTP sent to " + email;
+          } else {
+            status.innerText = "❌ Failed to send OTP";
+            btn.disabled = false;
+            btn.innerText = "Register";
+          }
+        } catch (err) {
+          status.innerText = "⚠️ Error sending OTP";
+          btn.disabled = false;
+          btn.innerText = "Register";
+        }
+      }
+
+      async function verifyOtp(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const otp = document.getElementById("otp").value;
+
+        const status = document.getElementById("statusMsg");
+        status.innerText = "⏳ Verifying OTP...";
+
+        const resp = await fetch("/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "email=" + encodeURIComponent(email) + "&otp=" + encodeURIComponent(otp),
+        });
+
+        if (resp.ok) {
+          status.innerText = "✅ OTP verified!";
+          window.location.href = "/profile.html";
+        } else {
+          status.innerText = "❌ Invalid OTP, try again.";
+        }
+      }
+    </script>
   </head>
   <body>
     <h1>Register at Ahooooy</h1>
-    <form action="/register" method="POST">
+
+    <!-- Registration form -->
+    <form id="emailForm" onsubmit="registerUser(event)">
       <label for="email">Email:</label><br>
       <input type="email" id="email" name="email" placeholder="Enter your email" required /><br><br>
-      <button type="submit">Register</button>
+      <button id="registerBtn" type="submit">Register</button>
     </form>
+
+    <p id="statusMsg" style="margin-top:10px; font-weight:bold;"></p>
+
+    <!-- OTP box (hidden by default) -->
+    <div id="otpBox" style="display:none; margin-top:20px;">
+      <form id="otpForm" onsubmit="verifyOtp(event)">
+        <label for="otp">Enter OTP:</label><br>
+        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required /><br><br>
+        <button type="submit">Verify OTP</button>
+      </form>
+    </div>
   </body>
 </html>
