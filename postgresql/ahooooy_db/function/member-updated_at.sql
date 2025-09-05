@@ -1,0 +1,11 @@
+-- liquibase formatted sql
+
+-- changeset BalajiPothula:2025-09-05T17:26:03Z
+CREATE OR REPLACE FUNCTION func_member_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+--rollback DROP FUNCTION func_member_updated_at() CASCADE;
