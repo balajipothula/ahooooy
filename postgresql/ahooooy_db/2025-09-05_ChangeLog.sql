@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset BalajiPothula:2025-09-04T13:16:01Z
+-- changeset BalajiPothula:2025-09-05T15:10:01Z
 CREATE TABLE member (
   virtual_number VARCHAR(20) PRIMARY KEY,
   email          VARCHAR(255) UNIQUE NOT NULL,
@@ -14,11 +14,11 @@ CREATE TABLE member (
 );
 --rollback DROP TABLE member;
 
--- changeset BalajiPothula:2025-09-04T13:16:02Z
+-- changeset BalajiPothula:2025-09-05T15:10:02Z
 CREATE INDEX idx_member_email ON member(email);
 --rollback DROP INDEX idx_member_email;
 
--- changeset BalajiPothula:2025-09-04T13:16:03Z
+-- changeset BalajiPothula:2025-09-05T15:10:03Z
 CREATE OR REPLACE FUNCTION func_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -28,7 +28,7 @@ END;
 $$ LANGUAGE plpgsql;
 --rollback DROP FUNCTION set_updated_at();
 
--- changeset BalajiPothula:2025-09-04T13:16:04Z
+-- changeset BalajiPothula:2025-09-05T15:10:04Z
 CREATE TRIGGER trigger_func_updated_at
 BEFORE UPDATE ON member
 FOR EACH ROW
