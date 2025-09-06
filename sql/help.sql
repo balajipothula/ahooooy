@@ -26,3 +26,9 @@ CREATE DATABASE ahooooy_db
   LC_COLLATE = 'en_US.UTF-8'
   LC_CTYPE   = 'en_US.UTF-8'
   TEMPLATE   = template0;
+
+# 
+SELECT * FROM "public"."databasechangelog";
+
+# 
+SELECT * FROM "public"."databasechangeloglock";
