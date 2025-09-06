@@ -6,9 +6,9 @@
 # --password : force password prompt
 # --dbname   : database name to connect to
 psql \
-  --host=aws-1-eu-central-1.pooler.supabase.com \
+  --host=aws-1-ap-south-1.pooler.supabase.com \
   --port=6543 \
-  --username=postgres.nghdcvvhshlygvwxyvgh \
+  --username=postgres.kscpngmnxlqwmkzjlylw \
   --password
 
 # creates a new PostgreSQL database with default settings.
