@@ -44,7 +44,7 @@ jobs:
         with:
           changelogFile: "./liquibase/postgresql/ahooooy_db/master.xml"
           driver: "org.postgresql.Driver"
-          url: "jdbc:postgresql://${{ vars.SUPABASE_PG_HOST }}:${{ vars.SUPABASE_PG_PORT }}/${{ vars.SUPABASE_PG_DB_NAME }}"
+          url: "jdbc:postgresql://${{ vars.SUPABASE_PG_HOST }}:${{ vars.SUPABASE_PG_PORT }}/${{ vars.SUPABASE_PG_DB_NAME }}?prepareThreshold=0"
           username: ${{ vars.SUPABASE_PG_USER }}
           password: ${{ secrets.SUPABASE_PG_PASSWORD }}
           defaultSchemaName: "public"
