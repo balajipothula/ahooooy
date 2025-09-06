@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset BalajiPothula:2025-09-05T17:26:03Z
+-- changeset BalajiPothula:2025-09-06T09:43:23Z
 CREATE OR REPLACE FUNCTION func_member_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

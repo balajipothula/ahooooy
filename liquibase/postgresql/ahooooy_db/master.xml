@@ -8,7 +8,7 @@
   <!-- table change management on Sat, 06 Sep 2025 -->
   <include file="./table/member.sql" />
 
-  <!-- index change management on Sat, 06 Sep 2025 -->
-  <include file="./index/member-email.sql" />
+  <!-- function change management on Sat, 06 Sep 2025 -->
+  <include file="./function/member-updated_at.sql" />
 
 </databaseChangeLog>
