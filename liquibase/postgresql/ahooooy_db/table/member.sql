@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset BalajiPothula:2025-09-05T17:17:07Z
+-- changeset BalajiPothula:2025-09-06T07:11:01Z
 CREATE TABLE member (
   virtual_number VARCHAR(20) PRIMARY KEY,
   email          VARCHAR(255) UNIQUE NOT NULL,
