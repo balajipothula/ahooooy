@@ -11,4 +11,7 @@
   <!-- function change management on Sat, 06 Sep 2025 -->
   <include file="./function/member-updated_at.sql" />
 
+  <!-- trigger change management on Sat, 06 Sep 2025 -->
+  <include file="./trigger/member-updated_at.sql" />
+
 </databaseChangeLog>
