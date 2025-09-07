@@ -125,18 +125,19 @@ func register(ctx context.Context) fiber.Handler {
 
 // handler - save profile
 func saveProfile(c *fiber.Ctx) error {
-	name := c.FormValue("name")
-	family := c.FormValue("family")
+	email := c.FormValue("email")
+	first_name := c.FormValue("first_name")
+	family_name := c.FormValue("family_name")
 	dob := c.FormValue("dob")
 	gender := c.FormValue("gender")
 
-	if name == "" || family == "" || dob == "" || gender == "" {
+	if first_name == "" || family_name == "" || dob == "" || gender == "" {
 		return c.Status(400).SendString("All fields are required")
 	}
 
 	// TODO: save to Redis / DB here (for now just log)
-	log.Printf("👤 New profile created: %s %s, DOB: %s, Gender: %s",
-		name, family, dob, gender)
+	log.Printf("👤 New profile created: %s %s, DOB: %s, Gender: %s, Email: %s",
+		first_name, family_name, dob, gender, email)
 
 	return c.SendString("🎉 Profile created successfully")
 }
