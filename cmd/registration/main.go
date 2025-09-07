@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"ahooooy/pkg/db"
+	//	"ahooooy/pkg/db"
 	"ahooooy/pkg/mailer"
 	"ahooooy/pkg/otp"
 	"ahooooy/pkg/store"
@@ -16,17 +16,18 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"gorm.io/gorm"
+	// "gorm.io/gorm"
 )
 
 var otpStore *redis.RedisOTPStore
-var dbConn *gorm.DB
+
+//var dbConn *gorm.DB
 
 func main() {
 
 	rdb := store.InitRedis()
 	otpStore = redis.NewRedisOTPStore(rdb)
-	dbConn := db.SetupDB()
+	//	dbConn := db.SetupDB()
 	ctx := context.Background()
 
 	app := fiber.New(fiber.Config{
