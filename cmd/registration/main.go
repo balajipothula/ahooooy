@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"strings" // ✅ needed for placeholder replacement
+	"strings"
 	"syscall"
 	"time"
 
@@ -31,17 +31,24 @@ func main() {
 
 	app.Use(logger.New())
 
-	// Serve only static assets (CSS/JS/images), NOT profile.html
-	app.Static("/assets", "./public/assets", fiber.Static{
-		Browse: false,
-	})
+	// Serve static assets only (CSS/JS/images)
+	app.Static("/assets", "./public/assets", fiber.Static{Browse: false})
 
 	app.Get("/", index)
 	app.Post("/register", register(ctx))
-	app.Get("/profile", profile) // ✅ inject email
+	app.Get("/profile", profile)
 	app.Post("/profile", saveProfile)
 
-	// Run server in goroutine
+	// Optional: redirect accidental /profile.html requests
+	app.Get("/profile.html", func(c *fiber.Ctx) error {
+		email := c.Query("email")
+		if email == "" {
+			return c.Status(400).SendString("Missing email")
+		}
+		return c.Redirect("/profile?email=" + email)
+	})
+
+	// Run server
 	go func() {
 		if err := app.Listen(":3000"); err != nil {
 			log.Printf("fiber stopped: %v", err)
@@ -58,12 +65,12 @@ func main() {
 	}
 }
 
-// handler - index
+// Index handler
 func index(c *fiber.Ctx) error {
 	return c.SendFile("./public/index.html")
 }
 
-// handler - register
+// Register handler
 func register(ctx context.Context) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		email := c.FormValue("email")
@@ -72,32 +79,28 @@ func register(ctx context.Context) fiber.Handler {
 		}
 
 		enteredOtp := c.FormValue("otp")
-
-		// Case 1: Validate OTP if provided
 		if enteredOtp != "" {
 			stored, err := otpStore.Get(ctx, email)
 			if err != nil {
-				log.Printf("❌ Failed to get OTP from Redis: %v", err)
+				log.Printf("❌ Failed to get OTP: %v", err)
 				return c.Status(500).SendString("Failed to validate OTP")
 			}
 			if stored == nil {
-				return c.Status(400).SendString("❌ OTP not found, please request again")
+				return c.Status(400).SendString("❌ OTP not found")
 			}
 			if stored.Code != enteredOtp {
 				return c.Status(400).SendString("❌ Invalid OTP")
 			}
 			if time.Now().After(stored.ExpiresAt) {
-				return c.Status(400).SendString("❌ OTP expired, please request again")
+				return c.Status(400).SendString("❌ OTP expired")
 			}
 
-			// ✅ OTP valid → registration successful
-			log.Printf("🎉 Registered successfully: %s\n", email)
+			log.Printf("🎉 Registered successfully: %s", email)
 			return c.Redirect("/profile?email=" + email)
 		}
 
-		// Case 2: Generate and send OTP
 		code := otp.Generate()
-		log.Printf("📩 Generated OTP %s for email %s\n", code, email)
+		log.Printf("📩 Generated OTP %s for email %s", code, email)
 
 		otpData := redis.OTP{
 			Email:     email,
@@ -106,22 +109,21 @@ func register(ctx context.Context) fiber.Handler {
 		}
 
 		if err := otpStore.Set(ctx, otpData, otp.OTPExpiry); err != nil {
-			log.Printf("❌ Failed to save OTP in Redis: %v", err)
+			log.Printf("❌ Failed to save OTP: %v", err)
 			return c.Status(500).SendString("Failed to save OTP")
 		}
-
-		log.Println("✅ OTP stored in Redis")
 
 		if err := mailer.SendEmail(email, code); err != nil {
 			log.Printf("❌ Failed to send OTP email: %v", err)
 			return c.Status(500).SendString("Failed to send OTP email")
 		}
 
+		log.Println("✅ OTP stored and sent")
 		return c.SendString("✅ OTP sent to " + email)
 	}
 }
 
-// handler - profile (GET) → inject email into profile.html
+// Profile GET handler
 func profile(c *fiber.Ctx) error {
 	email := c.Query("email")
 	if email == "" {
@@ -137,21 +139,20 @@ func profile(c *fiber.Ctx) error {
 	return c.Type("html").SendString(html)
 }
 
-// handler - save profile (POST)
+// Save profile POST handler
 func saveProfile(c *fiber.Ctx) error {
 	email := c.FormValue("email")
-	first_name := c.FormValue("first_name")
-	family_name := c.FormValue("family_name")
+	firstName := c.FormValue("first_name")
+	familyName := c.FormValue("family_name")
 	dob := c.FormValue("dob")
 	gender := c.FormValue("gender")
 
-	if email == "" || first_name == "" || family_name == "" || dob == "" || gender == "" {
+	if email == "" || firstName == "" || familyName == "" || dob == "" || gender == "" {
 		return c.Status(400).SendString("All fields are required")
 	}
 
-	// TODO: save to Redis / DB here (for now just log)
 	log.Printf("👤 New profile created: %s %s, DOB: %s, Gender: %s, Email: %s",
-		first_name, family_name, dob, gender, email)
+		firstName, familyName, dob, gender, email)
 
 	return c.SendString("🎉 Profile created successfully")
 }
