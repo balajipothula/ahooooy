@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings" // ✅ needed for placeholder replacement
 	"syscall"
 	"time"
 
-	//	"ahooooy/pkg/db"
 	"ahooooy/pkg/mailer"
 	"ahooooy/pkg/otp"
 	"ahooooy/pkg/store"
@@ -16,18 +16,13 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	// "gorm.io/gorm"
 )
 
 var otpStore *redis.RedisOTPStore
 
-//var dbConn *gorm.DB
-
 func main() {
-
 	rdb := store.InitRedis()
 	otpStore = redis.NewRedisOTPStore(rdb)
-	//	dbConn := db.SetupDB()
 	ctx := context.Background()
 
 	app := fiber.New(fiber.Config{
@@ -36,11 +31,14 @@ func main() {
 
 	app.Use(logger.New())
 
-	app.Static("/", "./public")
+	// Serve only static assets (CSS/JS/images), NOT profile.html
+	app.Static("/assets", "./public/assets", fiber.Static{
+		Browse: false,
+	})
 
 	app.Get("/", index)
 	app.Post("/register", register(ctx))
-	app.Get("/profile", profile) // ✅ new GET route to render profile.html with email
+	app.Get("/profile", profile) // ✅ inject email
 	app.Post("/profile", saveProfile)
 
 	// Run server in goroutine
@@ -58,7 +56,6 @@ func main() {
 	if err := app.Shutdown(); err != nil {
 		log.Printf("fiber shutdown failed: %v", err)
 	}
-
 }
 
 // handler - index
@@ -95,10 +92,10 @@ func register(ctx context.Context) fiber.Handler {
 
 			// ✅ OTP valid → registration successful
 			log.Printf("🎉 Registered successfully: %s\n", email)
-			return c.Redirect("/profile?email=" + email) // ✅ redirect with email query param
+			return c.Redirect("/profile?email=" + email)
 		}
 
-		// Case 2: Generate and send OTP (existing flow)
+		// Case 2: Generate and send OTP
 		code := otp.Generate()
 		log.Printf("📩 Generated OTP %s for email %s\n", code, email)
 
@@ -124,14 +121,20 @@ func register(ctx context.Context) fiber.Handler {
 	}
 }
 
-// handler - profile (GET) → serve profile.html and inject email
+// handler - profile (GET) → inject email into profile.html
 func profile(c *fiber.Ctx) error {
 	email := c.Query("email")
 	if email == "" {
 		return c.Status(400).SendString("Missing email")
 	}
-	// Simply serve static file, client-side form has hidden input for email
-	return c.SendFile("./public/profile.html")
+
+	htmlBytes, err := os.ReadFile("./public/profile.html")
+	if err != nil {
+		return c.Status(500).SendString("Could not load profile.html")
+	}
+
+	html := strings.Replace(string(htmlBytes), "{{.Email}}", email, 1)
+	return c.Type("html").SendString(html)
 }
 
 // handler - save profile (POST)
