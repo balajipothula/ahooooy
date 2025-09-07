@@ -40,6 +40,7 @@ func main() {
 
 	app.Get("/", index)
 	app.Post("/register", register(ctx))
+	app.Get("/profile", profile) // ✅ new GET route to render profile.html with email
 	app.Post("/profile", saveProfile)
 
 	// Run server in goroutine
@@ -94,7 +95,7 @@ func register(ctx context.Context) fiber.Handler {
 
 			// ✅ OTP valid → registration successful
 			log.Printf("🎉 Registered successfully: %s\n", email)
-			return c.Redirect("/profile.html")
+			return c.Redirect("/profile?email=" + email) // ✅ redirect with email query param
 		}
 
 		// Case 2: Generate and send OTP (existing flow)
@@ -123,7 +124,17 @@ func register(ctx context.Context) fiber.Handler {
 	}
 }
 
-// handler - save profile
+// handler - profile (GET) → serve profile.html and inject email
+func profile(c *fiber.Ctx) error {
+	email := c.Query("email")
+	if email == "" {
+		return c.Status(400).SendString("Missing email")
+	}
+	// Simply serve static file, client-side form has hidden input for email
+	return c.SendFile("./public/profile.html")
+}
+
+// handler - save profile (POST)
 func saveProfile(c *fiber.Ctx) error {
 	email := c.FormValue("email")
 	first_name := c.FormValue("first_name")
@@ -131,7 +142,7 @@ func saveProfile(c *fiber.Ctx) error {
 	dob := c.FormValue("dob")
 	gender := c.FormValue("gender")
 
-	if first_name == "" || family_name == "" || dob == "" || gender == "" {
+	if email == "" || first_name == "" || family_name == "" || dob == "" || gender == "" {
 		return c.Status(400).SendString("All fields are required")
 	}
 
